@@ -19,8 +19,6 @@ export async function getFile(path: string) {
   if (res.status === 404) return null;
   
   if (!res.ok) {
-    const text = await res.text();
-    console.error(`GitHub API error (${res.status}): ${text}`);
     throw new Error(`GitHub API error: ${res.status}`);
   }
   
@@ -56,7 +54,6 @@ export async function writeFile(path: string, data: object, sha?: string) {
   }
   
   if (!res.ok) {
-    console.error(`GitHub API write error (${res.status}): ${text}`);
     throw new Error(`GitHub API write error: ${res.status}`);
   }
   
