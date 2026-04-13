@@ -1,152 +1,308 @@
-// app/dashboard/page.tsx
+// components/BuyNumber.tsx
 "use client";
 
-import { useEffect, useState } from "react";
-import { getCurrentUser, logoutUser } from "@/lib/auth";
-import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
-import BuyNumber from "@/components/BuyNumber";
-import { User, LogOut, Wallet, TrendingUp, Terminal, RefreshCw } from "lucide-react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { Loader2, ShoppingCart, RefreshCw, Terminal, CheckCircle, XCircle } from "lucide-react";
 
-export default function Dashboard() {
-  const [user, setUser] = useState<any>(null);
-  const [balance, setBalance] = useState<any>(null);
-  const [loadingBalance, setLoadingBalance] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const router = useRouter();
+const API_KEY = process.env.NEXT_PUBLIC_RUMAHOTP_API_KEY || "";
+const BASE_URL = "https://www.rumahotp.io/api/v2";
 
+interface Service {
+  service_code: number;
+  service_name: string;
+  service_img: string;
+}
+
+interface Country {
+  number_id: number;
+  name: string;
+  img: string;
+  prefix: string;
+  rate: number;
+  stock_total: number;
+  pricelist: Array<{
+    provider_id: string;
+    server_id: number;
+    stock: number;
+    price: number;
+    price_format: string;
+    available: boolean;
+  }>;
+}
+
+interface Operator {
+  id: number;
+  name: string;
+  image: string;
+}
+
+export default function BuyNumber() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [operators, setOperators] = useState<Operator[]>([]);
+
+  const [selectedService, setSelectedService] = useState<number | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [selectedOperator, setSelectedOperator] = useState<number | null>(null);
+
+  const [loadingServices, setLoadingServices] = useState(true);
+  const [loadingCountries, setLoadingCountries] = useState(false);
+  const [loadingOperators, setLoadingOperators] = useState(false);
+  const [buying, setBuying] = useState(false);
+
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error" | "">("");
+
+  // Load Services
   useEffect(() => {
-    const current = getCurrentUser();
-    if (!current) {
-      router.push("/auth/login");
-      return;
-    }
-    setUser(current);
-    fetchBalance();
-  }, [router]);
+    const fetchServices = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/services`, {
+          headers: { "x-apikey": API_KEY, Accept: "application/json" },
+        });
+        if (res.data.success) setServices(res.data.data);
+      } catch (err) {
+        console.error(err);
+        setMessage("Gagal memuat daftar layanan");
+        setMessageType("error");
+      } finally {
+        setLoadingServices(false);
+      }
+    };
+    fetchServices();
+  }, []);
 
-  const fetchBalance = async () => {
-    setRefreshing(true);
-    if (!process.env.NEXT_PUBLIC_RUMAHOTP_API_KEY) {
-      setLoadingBalance(false);
-      setRefreshing(false);
+  // Load Countries ketika service dipilih
+  useEffect(() => {
+    if (!selectedService) return;
+
+    const fetchCountries = async () => {
+      setLoadingCountries(true);
+      setCountries([]);
+      setSelectedCountry(null);
+
+      try {
+        const res = await axios.get(`${BASE_URL}/countries?service_id=${selectedService}`, {
+          headers: { "x-apikey": API_KEY, Accept: "application/json" },
+        });
+        if (res.data.success) setCountries(res.data.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingCountries(false);
+      }
+    };
+
+    fetchCountries();
+  }, [selectedService]);
+
+  // Load Operators ketika negara dipilih
+  useEffect(() => {
+    if (!selectedCountry) return;
+
+    const fetchOperators = async () => {
+      setLoadingOperators(true);
+      setOperators([]);
+
+      try {
+        const res = await axios.get(
+          `${BASE_URL}/operators?country=${selectedCountry.name}&provider_id=${selectedCountry.pricelist[0]?.provider_id || ""}`,
+          {
+            headers: { "x-apikey": API_KEY, Accept: "application/json" },
+          }
+        );
+        if (res.data.success) setOperators(res.data.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingOperators(false);
+      }
+    };
+
+    fetchOperators();
+  }, [selectedCountry]);
+
+  const handleBuy = async () => {
+    if (!selectedService || !selectedCountry || !selectedOperator) {
+      setMessage("Pilih layanan, negara, dan operator terlebih dahulu!");
+      setMessageType("error");
       return;
     }
+
+    setBuying(true);
+    setMessage("");
+    setMessageType("");
 
     try {
-      const res = await fetch("https://www.rumahotp.io/api/v1/user/balance", {
-        headers: {
-          "x-apikey": process.env.NEXT_PUBLIC_RUMAHOTP_API_KEY,
-          Accept: "application/json",
+      const res = await axios.get(`${BASE_URL}/orders`, {
+        headers: { "x-apikey": API_KEY },
+        params: {
+          service_id: selectedService,
+          number_id: selectedCountry.number_id,
+          operator_id: selectedOperator,
+          provider_id: selectedCountry.pricelist[0]?.provider_id,
         },
       });
-      const data = await res.json();
-      if (data.success) setBalance(data.data);
-    } catch (err) {
-      console.error("Gagal ambil saldo", err);
-    } finally {
-      setLoadingBalance(false);
-      setRefreshing(false);
-    }
-  };
 
-  const handleLogout = () => {
-    logoutUser();
-    router.push("/");
+      if (res.data.success) {
+        setMessage(`Berhasil! Nomor: ${res.data.data.number || "Sedang diproses"}`);
+        setMessageType("success");
+      } else {
+        setMessage("Gagal membeli nomor. Coba lagi.");
+        setMessageType("error");
+      }
+    } catch (err: any) {
+      setMessage(err.response?.data?.message || "Terjadi kesalahan saat membeli nomor");
+      setMessageType("error");
+    } finally {
+      setBuying(false);
+    }
   };
 
   return (
-    <>
-      <Navbar />
-      <div className="min-h-[calc(100vh-80px)] relative overflow-hidden bg-gray-50">
-        {/* Retro Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{ 
-            backgroundImage: `radial-gradient(circle at 2px 2px, #000 1px, transparent 1px)`,
-            backgroundSize: '32px 32px'
-          }}></div>
-        </div>
-        <div className="absolute inset-0 bg-[linear-gradient(0deg,_#d1d5db_1px,_transparent_1px),linear-gradient(90deg,_#d1d5db_1px,_transparent_1px)] bg-[length:40px_40px] opacity-10"></div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Terminal size={14} className="text-gray-400" />
-                <span className="text-[10px] font-mono text-gray-400 tracking-wider">DASHBOARD</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-1 h-6 bg-gray-800 rounded-full"></div>
-                <h1 className="text-3xl sm:text-4xl font-light text-gray-900 tracking-tight">
-                  Dashboard
-                </h1>
-              </div>
-              <p className="text-gray-500 text-sm ml-3">
-                Selamat datang kembali, <span className="font-semibold text-gray-700">{user?.name}</span>
-              </p>
-            </div>
-
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-300 text-sm"
-            >
-              <LogOut size={14} />
-              Keluar
-            </button>
+    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 max-w-5xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+            <ShoppingCart size={18} className="text-gray-600" />
           </div>
-
-          {/* Stats Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-            {/* Saldo Card */}
-            <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <Wallet size={18} className="text-gray-600" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-mono text-gray-400">SALDO</p>
-                    <p className="text-2xl font-semibold text-gray-900">
-                      {loadingBalance ? "..." : balance?.formated || "Rp0"}
-                    </p>
-                  </div>
-                </div>
-                <button onClick={fetchBalance} disabled={refreshing} className="p-1 text-gray-400 hover:text-gray-600">
-                  <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
-                </button>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-[9px] font-mono text-gray-400">API_USERNAME</p>
-                <p className="font-mono text-xs text-gray-700">{balance?.username || "-"}</p>
-              </div>
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800">Beli Nomor Virtual</h2>
+            <div className="flex items-center gap-2 mt-0.5">
+              <Terminal size={10} className="text-gray-400" />
+              <span className="text-[10px] font-mono text-gray-400 tracking-wide">ORDER_NUMBER</span>
             </div>
-
-            {/* User Card */}
-            <div className="lg:col-span-2 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <User size={18} className="text-gray-600" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-mono text-gray-400">AKUN</p>
-                  <p className="text-base font-semibold text-gray-800">{user?.name}</p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Buy Number Section */}
-          <div className="mt-6">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-1 h-4 bg-gray-800 rounded-full"></div>
-              <h2 className="text-lg font-medium text-gray-800">Pilih Layanan</h2>
-            </div>
-            <BuyNumber />
           </div>
         </div>
       </div>
-    </>
+
+      {/* Message */}
+      {message && (
+        <div className={`mb-6 p-3 rounded-lg flex items-center gap-2 ${
+          messageType === "success" 
+            ? "bg-green-50 border border-green-100 text-green-700" 
+            : "bg-red-50 border border-red-100 text-red-700"
+        }`}>
+          {messageType === "success" ? (
+            <CheckCircle size={14} />
+          ) : (
+            <XCircle size={14} />
+          )}
+          <span className="text-sm">{message}</span>
+        </div>
+      )}
+
+      {/* Pilih Layanan */}
+      <div className="mb-8">
+        <label className="block text-xs font-mono text-gray-500 tracking-wider mb-3">PILIH LAYANAN</label>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {loadingServices ? (
+            <div className="col-span-full flex justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+            </div>
+          ) : (
+            services.map((service) => (
+              <button
+                key={service.service_code}
+                onClick={() => setSelectedService(service.service_code)}
+                className={`p-3 rounded-xl border transition-all duration-300 flex flex-col items-center gap-2 ${
+                  selectedService === service.service_code
+                    ? "border-gray-400 bg-gray-50"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                <img src={service.service_img} alt={service.service_name} className="w-10 h-10 object-contain" />
+                <span className="text-xs font-medium text-gray-700 text-center">{service.service_name}</span>
+              </button>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Pilih Negara */}
+      {selectedService && (
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-3">
+            <label className="block text-xs font-mono text-gray-500 tracking-wider">PILIH NEGARA</label>
+            {loadingCountries && <RefreshCw className="w-4 h-4 animate-spin text-gray-400" />}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {countries.map((country) => {
+              const priceInfo = country.pricelist[0];
+              return (
+                <button
+                  key={country.number_id}
+                  onClick={() => setSelectedCountry(country)}
+                  className={`p-4 rounded-xl border transition-all duration-300 text-left ${
+                    selectedCountry?.number_id === country.number_id
+                      ? "border-gray-400 bg-gray-50"
+                      : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <img src={country.img} alt={country.name} className="w-8 h-6 rounded object-cover" />
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-800 text-sm">{country.name}</p>
+                      <p className="text-xs text-gray-400 font-mono">{country.prefix}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-gray-800">{priceInfo?.price_format}</p>
+                      <p className="text-[10px] text-gray-500">Stok: {country.stock_total}</p>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Pilih Operator */}
+      {selectedCountry && (
+        <div className="mb-8">
+          <label className="block text-xs font-mono text-gray-500 tracking-wider mb-3">PILIH OPERATOR</label>
+          <div className="flex flex-wrap gap-2">
+            {loadingOperators ? (
+              <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+            ) : (
+              operators.map((op) => (
+                <button
+                  key={op.id}
+                  onClick={() => setSelectedOperator(op.id)}
+                  className={`px-4 py-2 rounded-lg border transition-all duration-300 flex items-center gap-2 ${
+                    selectedOperator === op.id
+                      ? "border-gray-400 bg-gray-50"
+                      : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  <img src={op.image} alt={op.name} className="w-5 h-5" />
+                  <span className="text-sm text-gray-700 capitalize">{op.name}</span>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Tombol Beli */}
+      {selectedService && selectedCountry && selectedOperator && (
+        <button
+          onClick={handleBuy}
+          disabled={buying}
+          className="w-full py-3 bg-gray-900 text-white font-medium text-base rounded-xl hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
+        >
+          {buying ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" /> Memproses...
+            </>
+          ) : (
+            "Beli Nomor Sekarang"
+          )}
+        </button>
+      )}
+    </div>
   );
 }
