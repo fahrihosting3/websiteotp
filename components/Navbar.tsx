@@ -113,6 +113,12 @@ export default function Navbar() {
                 >
                   Layanan
                 </Link>
+                <Link 
+                  href="/deposit" 
+                  className="text-gray-600 text-sm font-medium hover:text-gray-900 transition-colors duration-200"
+                >
+                  Deposit
+                </Link>
 
                 {/* Balance + Avatar Section */}
                 <div className="flex items-center gap-3 pl-4 border-l border-gray-200" ref={dropdownRef}>
@@ -274,6 +280,13 @@ export default function Navbar() {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Layanan
+                </Link>
+                <Link
+                  href="/deposit"
+                  className="block text-gray-600 text-sm font-medium hover:text-gray-900 transition-colors duration-200 py-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Deposit
                 </Link>
                 <div className="border-t border-gray-100 pt-4 space-y-3">
                   {/* Mobile User Info */}
