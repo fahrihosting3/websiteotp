@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import Navbar from "@/components/Navbar";
@@ -25,7 +25,7 @@ interface Operator {
   image: string;
 }
 
-export default function OrderDetailPage() {
+function OrderDetailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -480,5 +480,33 @@ export default function OrderDetailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading component for Suspense
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen w-full" style={{ background: "#FFFEF0" }}>
+      <Navbar />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "calc(100vh - 80px)",
+        }}
+      >
+        <Loader2 size={48} className="animate-spin" style={{ color: "#0A0A0A" }} />
+      </div>
+    </div>
+  );
+}
+
+// Main export with Suspense wrapper
+export default function OrderDetailPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <OrderDetailContent />
+    </Suspense>
   );
 }
