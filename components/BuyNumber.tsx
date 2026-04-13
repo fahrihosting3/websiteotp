@@ -119,7 +119,10 @@ export default function BuyNumber() {
       style={{
         fontFamily: "'Space Mono', 'Courier New', monospace",
         background: "#FFFEF0",
-        minHeight: "100vh",
+        minHeight: "calc(100vh - 80px)",
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "hidden",
       }}
     >
       {/* ===== HERO HEADER ===== */}
@@ -127,10 +130,11 @@ export default function BuyNumber() {
         style={{
           background: "#0A0A0A",
           borderBottom: "4px solid #FFD600",
-          padding: "32px 40px 28px",
+          padding: "24px 16px 20px",
           position: "relative",
           overflow: "hidden",
         }}
+        className="sm:px-10 sm:py-8"
       >
         {/* Retro dot grid */}
         <div
@@ -192,7 +196,7 @@ export default function BuyNumber() {
         </div>
       </div>
 
-      <div style={{ padding: "32px 40px", maxWidth: "1100px", margin: "0 auto" }}>
+      <div style={{ padding: "24px 16px", maxWidth: "1100px", margin: "0 auto" }} className="sm:px-10 sm:py-8">
 
         {/* ===== SECTION 01: SLIDER APLIKASI ===== */}
         <div style={{ marginBottom: "40px" }}>
@@ -356,9 +360,9 @@ export default function BuyNumber() {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(4, 1fr)",
                   gap: "12px",
                 }}
+                className="grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
               >
                 {visibleServices.map((service) => {
                   const isSelected =
@@ -517,12 +521,27 @@ export default function BuyNumber() {
                 <div
                   style={{
                     display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    background: "#0A0A0A",
+                    padding: "12px 16px",
+                    borderBottom: "3px solid #FFD600",
+                    gap: "12px",
+                  }}
+                  className="sm:hidden"
+                >
+                  <span style={{ color: "#FFD600", fontSize: "10px", letterSpacing: "2px", fontWeight: "900" }}>NEGARA</span>
+                  <span style={{ color: "#FFD600", fontSize: "10px", letterSpacing: "2px", fontWeight: "900" }}>HARGA</span>
+                </div>
+                <div
+                  style={{
+                    display: "grid",
                     gridTemplateColumns: "2fr 1fr 1fr auto",
                     background: "#0A0A0A",
                     padding: "12px 20px",
                     borderBottom: "3px solid #FFD600",
                     gap: "12px",
                   }}
+                  className="hidden sm:grid"
                 >
                   {["NEGARA", "PREFIX", "STOK", "HARGA / AKSI"].map((h) => (
                     <span
@@ -546,11 +565,6 @@ export default function BuyNumber() {
                     <div
                       key={country.number_id}
                       style={{
-                        display: "grid",
-                        gridTemplateColumns: "2fr 1fr 1fr auto",
-                        alignItems: "center",
-                        padding: "12px 20px",
-                        gap: "12px",
                         borderBottom:
                           idx < countries.length - 1
                             ? "2px solid #E8E8D0"
@@ -567,107 +581,172 @@ export default function BuyNumber() {
                           idx % 2 === 0 ? "#FFFEF0" : "#F5F4E0";
                       }}
                     >
-                      {/* Nama Negara */}
-                      <div
+                      {/* Mobile Layout */}
+                      <div 
+                        className="sm:hidden"
                         style={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "10px",
+                          justifyContent: "space-between",
+                          padding: "12px 16px",
+                          gap: "12px",
                         }}
                       >
-                        <img
-                          src={country.img}
-                          alt={country.name}
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, minWidth: 0 }}>
+                          <img
+                            src={country.img}
+                            alt={country.name}
+                            style={{
+                              width: "30px",
+                              height: "22px",
+                              objectFit: "cover",
+                              border: "2px solid #0A0A0A",
+                              flexShrink: 0,
+                            }}
+                          />
+                          <div style={{ minWidth: 0 }}>
+                            <span style={{ fontWeight: "700", fontSize: "12px", color: "#0A0A0A", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {country.name}
+                            </span>
+                            <span style={{ fontSize: "10px", color: "#666" }}>{country.prefix} | Stok: {country.stock_total}</span>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => goToDetail(country)}
                           style={{
-                            width: "34px",
-                            height: "24px",
-                            objectFit: "cover",
+                            background: "#FFD600",
                             border: "2px solid #0A0A0A",
+                            padding: "6px 10px",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            boxShadow: "2px 2px 0 #0A0A0A",
+                            fontFamily: "'Space Mono', monospace",
+                            fontWeight: "900",
+                            fontSize: "10px",
+                            color: "#0A0A0A",
+                            whiteSpace: "nowrap",
                             flexShrink: 0,
                           }}
-                        />
-                        <span
-                          style={{
-                            fontWeight: "700",
-                            fontSize: "13px",
-                            color: "#0A0A0A",
-                          }}
                         >
-                          {country.name}
-                        </span>
+                          <span>{priceInfo?.price_format || "LIHAT"}</span>
+                          <ArrowRight size={10} />
+                        </button>
                       </div>
 
-                      {/* Prefix */}
-                      <span
-                        style={{
-                          fontFamily: "monospace",
-                          fontSize: "12px",
-                          color: "#555",
-                          letterSpacing: "1px",
-                        }}
-                      >
-                        {country.prefix}
-                      </span>
-
-                      {/* Stok */}
+                      {/* Desktop Layout */}
                       <div
+                        className="hidden sm:grid"
                         style={{
-                          display: "flex",
+                          gridTemplateColumns: "2fr 1fr 1fr auto",
                           alignItems: "center",
-                          gap: "6px",
+                          padding: "12px 20px",
+                          gap: "12px",
                         }}
                       >
+                        {/* Nama Negara */}
                         <div
                           style={{
-                            width: "8px",
-                            height: "8px",
-                            background:
-                              country.stock_total > 0 ? "#00C851" : "#FF4444",
-                            border: "2px solid #0A0A0A",
-                            flexShrink: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
                           }}
-                        />
-                        <span
-                          style={{ fontSize: "12px", fontWeight: "700" }}
                         >
-                          {country.stock_total}
-                        </span>
-                      </div>
+                          <img
+                            src={country.img}
+                            alt={country.name}
+                            style={{
+                              width: "34px",
+                              height: "24px",
+                              objectFit: "cover",
+                              border: "2px solid #0A0A0A",
+                              flexShrink: 0,
+                            }}
+                          />
+                          <span
+                            style={{
+                              fontWeight: "700",
+                              fontSize: "13px",
+                              color: "#0A0A0A",
+                            }}
+                          >
+                            {country.name}
+                          </span>
+                        </div>
 
-                      {/* Tombol → Halaman Baru */}
-                      <button
-                        onClick={() => goToDetail(country)}
-                        style={{
-                          background: "#FFD600",
-                          border: "3px solid #0A0A0A",
-                          padding: "7px 16px",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "6px",
-                          boxShadow: "3px 3px 0 #0A0A0A",
-                          fontFamily: "'Space Mono', monospace",
-                          fontWeight: "900",
-                          fontSize: "11px",
-                          letterSpacing: "0.5px",
-                          color: "#0A0A0A",
-                          whiteSpace: "nowrap",
-                          transition: "all 0.1s",
-                        }}
-                        onMouseEnter={(e) => {
-                          const el = e.currentTarget as HTMLButtonElement;
-                          el.style.transform = "translate(-2px, -2px)";
-                          el.style.boxShadow = "5px 5px 0 #0A0A0A";
-                        }}
-                        onMouseLeave={(e) => {
-                          const el = e.currentTarget as HTMLButtonElement;
-                          el.style.transform = "none";
-                          el.style.boxShadow = "3px 3px 0 #0A0A0A";
-                        }}
-                      >
-                        <span>{priceInfo?.price_format || "LIHAT"}</span>
-                        <ArrowRight size={12} />
-                      </button>
+                        {/* Prefix */}
+                        <span
+                          style={{
+                            fontFamily: "monospace",
+                            fontSize: "12px",
+                            color: "#555",
+                            letterSpacing: "1px",
+                          }}
+                        >
+                          {country.prefix}
+                        </span>
+
+                        {/* Stok */}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: "8px",
+                              height: "8px",
+                              background:
+                                country.stock_total > 0 ? "#00C851" : "#FF4444",
+                              border: "2px solid #0A0A0A",
+                              flexShrink: 0,
+                            }}
+                          />
+                          <span
+                            style={{ fontSize: "12px", fontWeight: "700" }}
+                          >
+                            {country.stock_total}
+                          </span>
+                        </div>
+
+                        {/* Tombol → Halaman Baru */}
+                        <button
+                          onClick={() => goToDetail(country)}
+                          style={{
+                            background: "#FFD600",
+                            border: "3px solid #0A0A0A",
+                            padding: "7px 16px",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            boxShadow: "3px 3px 0 #0A0A0A",
+                            fontFamily: "'Space Mono', monospace",
+                            fontWeight: "900",
+                            fontSize: "11px",
+                            letterSpacing: "0.5px",
+                            color: "#0A0A0A",
+                            whiteSpace: "nowrap",
+                            transition: "all 0.1s",
+                          }}
+                          onMouseEnter={(e) => {
+                            const el = e.currentTarget as HTMLButtonElement;
+                            el.style.transform = "translate(-2px, -2px)";
+                            el.style.boxShadow = "5px 5px 0 #0A0A0A";
+                          }}
+                          onMouseLeave={(e) => {
+                            const el = e.currentTarget as HTMLButtonElement;
+                            el.style.transform = "none";
+                            el.style.boxShadow = "3px 3px 0 #0A0A0A";
+                          }}
+                        >
+                          <span>{priceInfo?.price_format || "LIHAT"}</span>
+                          <ArrowRight size={12} />
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
