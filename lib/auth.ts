@@ -17,7 +17,7 @@ export async function registerUser(email: string, password: string, name: string
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Registrasi gagal");
   return data;
-}
+};
 
 export const loginUser = (email: string, password: string): Promise<User> => {
   return new Promise((resolve, reject) => {
