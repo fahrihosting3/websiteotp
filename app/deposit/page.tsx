@@ -21,7 +21,6 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
-import { AnimatePresence, motion } from "framer-motion";
 
 type DepositStatus = "idle" | "loading" | "pending" | "success" | "cancel" | "expired" | "error";
 
@@ -220,26 +219,19 @@ export default function DepositPage() {
       <Navbar />
       <div className="min-h-[calc(100vh-80px)] relative overflow-hidden bg-slate-100">
         {/* Pending Payment Notification */}
-        <AnimatePresence>
-          {showPendingNotif && (
-            <motion.div
-              initial={{ opacity: 0, y: -50, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -30, scale: 0.9 }}
-              className="fixed top-24 left-1/2 -translate-x-1/2 z-50"
-            >
-              <div className="bg-amber-50 border-4 border-slate-800 px-6 py-4 shadow-[6px_6px_0px_#1e293b] flex items-center gap-3">
-                <div className="w-10 h-10 bg-amber-200 border-2 border-slate-800 flex items-center justify-center">
-                  <Loader2 size={20} className="text-slate-800 animate-spin" />
-                </div>
-                <div>
-                  <p className="font-black text-slate-800 text-sm">PEMBAYARAN BELUM SELESAI</p>
-                  <p className="text-xs text-slate-600">Silakan selesaikan pembayaran Anda</p>
-                </div>
+        {showPendingNotif && (
+          <div className="fixed top-24 left-1/2 z-50 animate-slideDown">
+            <div className="bg-amber-50 border-4 border-slate-800 px-6 py-4 shadow-[6px_6px_0px_#1e293b] flex items-center gap-3">
+              <div className="w-10 h-10 bg-amber-200 border-2 border-slate-800 flex items-center justify-center">
+                <Loader2 size={20} className="text-slate-800 animate-spin" />
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <div>
+                <p className="font-black text-slate-800 text-sm">PEMBAYARAN BELUM SELESAI</p>
+                <p className="text-xs text-slate-600">Silakan selesaikan pembayaran Anda</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Neo Brutalism Pattern Background */}
         <div className="absolute inset-0">
