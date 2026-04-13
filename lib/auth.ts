@@ -7,34 +7,17 @@ export type User = {
   balance: number;
   createdAt: string;
 };
-
-export const registerUser = (email: string, password: string, name: string): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
-
-      if (users.find(u => u.email === email)) {
-        reject(new Error("Email sudah terdaftar"));
-        return;
-      }
-
-      const newUser: User = {
-        id: Date.now().toString(),
-        username: email.split("@")[0],
-        email,
-        name,
-        balance: 0,
-        createdAt: new Date().toISOString(),
-      };
-
-      users.push(newUser);
-      localStorage.setItem("users", JSON.stringify(users));
-      localStorage.setItem("currentUser", JSON.stringify(newUser));
-
-      resolve(newUser);
-    }, 800);
+export async function registerUser(email: string, password: string, name: string) {
+  const res = await fetch("/api/users/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password }),
   });
-};
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Registrasi gagal");
+  return data;
+}
 
 export const loginUser = (email: string, password: string): Promise<User> => {
   return new Promise((resolve, reject) => {
