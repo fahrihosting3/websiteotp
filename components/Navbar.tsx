@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCurrentUser, logoutUser } from "@/lib/auth";
-import { LogOut, Menu, X } from "lucide-react";
+import { LogOut, Menu, X, Terminal } from "lucide-react";
 
 export default function Navbar() {
   const router = useRouter();
@@ -24,59 +24,68 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-[var(--color-background)] border-b border-[var(--color-border)] backdrop-blur-sm">
-      <div className="container-custom">
-        <div className="flex justify-between items-center py-5">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md group-hover:shadow-lg transition-shadow duration-200">
-              ✨
+    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center py-4">
+          {/* Logo - Clean & Simple */}
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors duration-200">
+              <Terminal size={16} className="text-gray-600" />
             </div>
-            <span className="font-bold text-xl tracking-tight text-[var(--color-text-primary)] hidden sm:inline">
+            <span className="font-semibold text-lg text-gray-800 tracking-tight hidden sm:inline">
               RUMA OTP
             </span>
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-[var(--color-text-secondary)] font-medium hover:text-[var(--color-primary)] transition-colors duration-200">
+          <div className="hidden md:flex items-center gap-6">
+            <Link 
+              href="/" 
+              className="text-gray-600 text-sm font-medium hover:text-gray-900 transition-colors duration-200"
+            >
               Beranda
             </Link>
-            <Link href="/#fitur" className="text-[var(--color-text-secondary)] font-medium hover:text-[var(--color-primary)] transition-colors duration-200">
+            <Link 
+              href="/#fitur" 
+              className="text-gray-600 text-sm font-medium hover:text-gray-900 transition-colors duration-200"
+            >
               Fitur
             </Link>
 
             {user ? (
               <>
-                <Link href="/dashboard" className="text-[var(--color-text-secondary)] font-medium hover:text-[var(--color-primary)] transition-colors duration-200">
+                <Link 
+                  href="/dashboard" 
+                  className="text-gray-600 text-sm font-medium hover:text-gray-900 transition-colors duration-200"
+                >
                   Dashboard
                 </Link>
-                <div className="flex items-center gap-4 border-l border-[var(--color-border)] pl-8">
-                  <span className="text-sm text-[var(--color-text-secondary)]">
-                    Halo, <strong className="text-[var(--color-text-primary)]">{user.name}</strong>
+                <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
+                  <span className="text-sm text-gray-600">
+                    Halo, <span className="font-semibold text-gray-800">{user.name}</span>
                   </span>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-2 px-4 py-2 text-[var(--color-error)] hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200 font-medium"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-gray-600 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
                   >
-                    <LogOut size={18} />
+                    <LogOut size={14} />
                     Keluar
                   </button>
                 </div>
               </>
             ) : (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => router.push("/auth/login")}
-                  className="px-6 py-2.5 text-[var(--color-primary)] font-medium border border-[var(--color-primary)] rounded-lg hover:bg-[var(--color-surface)] transition-colors duration-200"
+                  className="px-4 py-1.5 text-gray-700 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
                 >
                   Masuk
                 </button>
                 <button
                   onClick={() => router.push("/auth/register")}
-                  className="btn-primary"
+                  className="px-4 py-1.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-all duration-200"
                 >
-                  Daftar Gratis
+                  Daftar
                 </button>
               </div>
             )}
@@ -85,29 +94,29 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 hover:bg-[var(--color-surface)] rounded-lg transition-colors duration-200"
+            className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
           >
             {mobileMenuOpen ? (
-              <X size={24} className="text-[var(--color-text-primary)]" />
+              <X size={20} className="text-gray-600" />
             ) : (
-              <Menu size={24} className="text-[var(--color-text-primary)]" />
+              <Menu size={20} className="text-gray-600" />
             )}
           </button>
         </div>
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-[var(--color-border)] py-4 space-y-4">
+          <div className="md:hidden border-t border-gray-100 py-4 space-y-3">
             <Link
               href="/"
-              className="block text-[var(--color-text-secondary)] font-medium hover:text-[var(--color-primary)] transition-colors duration-200 py-2"
+              className="block text-gray-600 text-sm font-medium hover:text-gray-900 transition-colors duration-200 py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Beranda
             </Link>
             <Link
               href="/#fitur"
-              className="block text-[var(--color-text-secondary)] font-medium hover:text-[var(--color-primary)] transition-colors duration-200 py-2"
+              className="block text-gray-600 text-sm font-medium hover:text-gray-900 transition-colors duration-200 py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               Fitur
@@ -117,32 +126,32 @@ export default function Navbar() {
               <>
                 <Link
                   href="/dashboard"
-                  className="block text-[var(--color-text-secondary)] font-medium hover:text-[var(--color-primary)] transition-colors duration-200 py-2"
+                  className="block text-gray-600 text-sm font-medium hover:text-gray-900 transition-colors duration-200 py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Dashboard
                 </Link>
-                <div className="border-t border-[var(--color-border)] pt-4 space-y-3">
-                  <span className="block text-sm text-[var(--color-text-secondary)]">
-                    Halo, <strong className="text-[var(--color-text-primary)]">{user.name}</strong>
+                <div className="border-t border-gray-100 pt-4 space-y-3">
+                  <span className="block text-sm text-gray-600">
+                    Halo, <span className="font-semibold text-gray-800">{user.name}</span>
                   </span>
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 text-[var(--color-error)] bg-red-50 dark:bg-red-900/20 rounded-lg transition-colors duration-200 font-medium"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 text-gray-600 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-200"
                   >
-                    <LogOut size={18} />
+                    <LogOut size={14} />
                     Keluar
                   </button>
                 </div>
               </>
             ) : (
-              <div className="space-y-3 pt-4 border-t border-[var(--color-border)]">
+              <div className="space-y-3 pt-4 border-t border-gray-100">
                 <button
                   onClick={() => {
                     router.push("/auth/login");
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full px-6 py-3 text-[var(--color-primary)] font-medium border border-[var(--color-primary)] rounded-lg hover:bg-[var(--color-surface)] transition-colors duration-200"
+                  className="w-full px-4 py-2 text-gray-700 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-200"
                 >
                   Masuk
                 </button>
@@ -151,9 +160,9 @@ export default function Navbar() {
                     router.push("/auth/register");
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full px-6 py-3 bg-gradient-primary text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200"
+                  className="w-full px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-all duration-200"
                 >
-                  Daftar Gratis
+                  Daftar
                 </button>
               </div>
             )}
