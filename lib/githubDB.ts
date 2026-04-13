@@ -1,6 +1,6 @@
 const GITHUB_API = "https://api.github.com";
 const REPO = "fahrihosting3/database-user";
-const TOKEN = "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";
+const TOKEN = "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";
 const BRANCH = process.env.GITHUB_BRANCH || "main";
 
 const headers = {
