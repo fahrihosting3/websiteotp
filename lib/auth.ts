@@ -4,6 +4,7 @@ export type User = {
   username: string;
   email: string;
   name: string;
+  balance: number;
   createdAt: string;
 };
 
@@ -22,6 +23,7 @@ export const registerUser = (email: string, password: string, name: string): Pro
         username: email.split("@")[0],
         email,
         name,
+        balance: 0,
         createdAt: new Date().toISOString(),
       };
 
@@ -58,4 +60,37 @@ export const logoutUser = () => {
 export const getCurrentUser = (): User | null => {
   const user = localStorage.getItem("currentUser");
   return user ? JSON.parse(user) : null;
+};
+
+export const updateUserBalance = (amount: number): Promise<User> => {
+  return new Promise((resolve, reject) => {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+      reject(new Error("User tidak ditemukan"));
+      return;
+    }
+
+    const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
+    const userIndex = users.findIndex(u => u.id === currentUser.id);
+
+    if (userIndex === -1) {
+      reject(new Error("User tidak ditemukan di database"));
+      return;
+    }
+
+    // Update balance
+    const currentBalance = users[userIndex].balance || 0;
+    users[userIndex].balance = currentBalance + amount;
+
+    // Save to localStorage
+    localStorage.setItem("users", JSON.stringify(users));
+    localStorage.setItem("currentUser", JSON.stringify(users[userIndex]));
+
+    resolve(users[userIndex]);
+  });
+};
+
+export const getUserBalance = (): number => {
+  const user = getCurrentUser();
+  return user?.balance || 0;
 };
