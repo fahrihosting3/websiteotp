@@ -5,8 +5,7 @@ import { useEffect, useState } from "react";
 import { getCurrentUser, logoutUser } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import BuyNumber from "@/components/BuyNumber";
-import { User, LogOut, Wallet, TrendingUp, Terminal, RefreshCw } from "lucide-react";
+import { User, LogOut, Wallet, Terminal, RefreshCw } from "lucide-react";
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -137,14 +136,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Buy Number Section */}
-          <div className="mt-6">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-1 h-4 bg-gray-800 rounded-full"></div>
-              <h2 className="text-lg font-medium text-gray-800">Pilih Layanan</h2>
-            </div>
-            <BuyNumber />
-          </div>
         </div>
       </div>
     </>
