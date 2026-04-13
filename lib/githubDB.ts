@@ -3,11 +3,6 @@ const REPO = process.env.GITHUB_REPO!;
 const TOKEN = process.env.GITHUB_TOKEN!;
 const BRANCH = process.env.GITHUB_BRANCH || "main";
 
-// Debug: log env vars (remove after testing)
-console.log("[v0] GITHUB_REPO:", REPO);
-console.log("[v0] GITHUB_TOKEN exists:", !!TOKEN);
-console.log("[v0] GITHUB_TOKEN prefix:", TOKEN?.substring(0, 10) + "...");
-
 // Classic PAT starts with "ghp_", fine-grained starts with "github_pat_"
 // Classic PAT uses "token", fine-grained uses "Bearer"
 const authPrefix = TOKEN?.startsWith("github_pat_") ? "Bearer" : "token";
