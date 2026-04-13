@@ -1,5 +1,6 @@
 // components/Features.tsx
-import { Zap, Shield, Clock, Globe, Smartphone, Cpu } from "lucide-react";
+"use client";
+import { Zap, Shield, Clock, Globe, Smartphone, Cpu, Terminal } from "lucide-react";
 
 export default function Features() {
   const features = [
@@ -7,49 +8,59 @@ export default function Features() {
       icon: Zap,
       title: "Instant OTP",
       desc: "Dapatkan OTP dalam hitungan detik dengan kecepatan maksimal",
-      color: "text-[var(--color-primary)]",
     },
     {
       icon: Shield,
       title: "Aman & Terpercaya",
       desc: "Nomor baru setiap transaksi untuk keamanan maksimal",
-      color: "text-[var(--color-secondary)]",
     },
     {
       icon: Clock,
       title: "Real-time Notifications",
       desc: "Notifikasi instan langsung ke dashboard Anda",
-      color: "text-[var(--color-accent)]",
     },
     {
       icon: Globe,
       title: "85+ Negara",
       desc: "Jangkauan global untuk semua kebutuhan verifikasi",
-      color: "text-[var(--color-info)]",
     },
     {
       icon: Smartphone,
       title: "API Mudah",
       desc: "Integrasi seamless dengan dokumentasi lengkap",
-      color: "text-[var(--color-primary)]",
     },
     {
       icon: Cpu,
       title: "99.9% Uptime",
       desc: "Infrastruktur enterprise dengan reliabilitas tinggi",
-      color: "text-[var(--color-secondary)]",
     },
   ];
 
   return (
-    <section id="fitur" className="section-spacing bg-gradient-to-br from-[var(--color-surface)] via-[var(--color-background)] to-[var(--color-surface)]">
-      <div className="container-custom">
+    <section id="fitur" className="relative overflow-hidden bg-gray-50 py-20 sm:py-28">
+      {/* Retro Pattern Background */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{ 
+          backgroundImage: `radial-gradient(circle at 2px 2px, #000 1px, transparent 1px)`,
+          backgroundSize: '32px 32px'
+        }}></div>
+      </div>
+      
+      {/* Subtle Grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(0deg,_#d1d5db_1px,_transparent_1px),linear-gradient(90deg,_#d1d5db_1px,_transparent_1px)] bg-[length:40px_40px] opacity-10"></div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16 max-w-2xl mx-auto">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-[var(--color-text-primary)]">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Terminal size={16} className="text-gray-400" />
+            <span className="text-xs font-mono text-gray-500 tracking-wide">WHY CHOOSE US</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-light text-gray-900 mb-4 tracking-tight">
             Mengapa Pilih RUMA OTP?
           </h2>
-          <p className="text-lg text-[var(--color-text-secondary)] leading-relaxed">
+          <div className="w-12 h-px bg-gray-300 mx-auto my-4"></div>
+          <p className="text-base text-gray-500 leading-relaxed max-w-xl mx-auto">
             Kami menyediakan solusi OTP terpercaya dengan teknologi terdepan untuk keamanan akun Anda
           </p>
         </div>
@@ -61,15 +72,15 @@ export default function Features() {
             return (
               <div
                 key={i}
-                className="bg-[var(--color-background)] border border-[var(--color-border)] rounded-2xl p-8 card-shadow hover:border-[var(--color-primary)] transition-all duration-300 group"
+                className="group bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:border-gray-200"
               >
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 flex items-center justify-center mb-6 group-hover:shadow-lg transition-shadow duration-300`}>
-                  <IconComponent size={28} className={f.color} />
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mb-5 group-hover:bg-gray-200 transition-colors duration-300">
+                  <IconComponent size={20} className="text-gray-600" />
                 </div>
-                <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-3">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
                   {f.title}
                 </h3>
-                <p className="text-[var(--color-text-secondary)] leading-relaxed">
+                <p className="text-sm text-gray-500 leading-relaxed">
                   {f.desc}
                 </p>
               </div>
