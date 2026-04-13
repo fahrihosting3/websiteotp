@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, updateUserBalance } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import {
@@ -165,7 +165,15 @@ export default function DepositPage() {
       if (data.success) {
         if (data.data.status === "success") {
           setStatus("success");
-          toast.success("Pembayaran berhasil!");
+          // Add balance to user account
+          const amountToAdd = depositData.diterima || 0;
+          try {
+            await updateUserBalance(amountToAdd);
+            toast.success(`Pembayaran berhasil! Saldo +Rp${amountToAdd.toLocaleString("id-ID")}`);
+          } catch (err) {
+            console.error("Error updating balance:", err);
+            toast.success("Pembayaran berhasil!");
+          }
         } else if (data.data.status === "cancel") {
           setStatus("cancel");
           toast.error("Pembayaran dibatalkan");
