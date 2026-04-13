@@ -1,41 +1,36 @@
 const GITHUB_API = "https://api.github.com";
-const REPO = "fahrihosting3/database-user";
-const TOKEN = "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";
+const REPO = process.env.GITHUB_REPO!;
+const TOKEN = process.env.GITHUB_TOKEN!;
 const BRANCH = process.env.GITHUB_BRANCH || "main";
+
 const headers = {
-  Authorization: `token ${TOKEN}`,        // atau `Bearer ${TOKEN}` — coba keduanya
-  Accept: "application/vnd.github+json",             // tambahkan ini, GitHub suka
+  Authorization: `Bearer ${TOKEN}`,
+  "Content-Type": "application/json",
+  Accept: "application/vnd.github+json",
 };
 
-// Contoh getFile yang lebih baik
+// Ambil file (return null kalau belum ada)
 export async function getFile(path: string) {
-  const url = `${GITHUB_API}/repos/${REPO}/contents/${path}?ref=${BRANCH}`;
-  
-  const res = await fetch(url, { 
-    headers,
-    cache: "no-store"   // kalau perlu fresh data
-  });
-
-  if (res.status === 401) {
-    console.error("401 Bad credentials - token mungkin invalid atau di-block");
-    throw new Error("GitHub authentication failed (401)");
-  }
-
+  const res = await fetch(`${GITHUB_API}/repos/${REPO}/contents/${path}?ref=${BRANCH}`, { headers });
   if (res.status === 404) return null;
   
   if (!res.ok) {
     const text = await res.text();
-    console.error(`GitHub error ${res.status}:`, text);
+    console.error(`GitHub API error (${res.status}): ${text}`);
     throw new Error(`GitHub API error: ${res.status}`);
   }
-
-  const data = await res.json();
+  
+  const text = await res.text();
+  if (!text) {
+    throw new Error("GitHub API returned empty response");
+  }
+  
+  const data = JSON.parse(text);
   return {
     content: JSON.parse(Buffer.from(data.content, "base64").toString("utf-8")),
     sha: data.sha,
   };
 }
-
 
 // Tulis/update file
 export async function writeFile(path: string, data: object, sha?: string) {
