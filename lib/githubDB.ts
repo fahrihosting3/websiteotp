@@ -4,9 +4,9 @@ const TOKEN = "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";
 const BRANCH = process.env.GITHUB_BRANCH || "main";
 
 const headers = {
-  Authorization: `Bearer ${TOKEN}`,
-  "Content-Type": "application/json",
+  Authorization: `token ${TOKEN}`,
   Accept: "application/vnd.github+json",
+  "X-GitHub-Api-Version": "2022-11-28",
 };
 
 // Ambil file (return null kalau belum ada)
