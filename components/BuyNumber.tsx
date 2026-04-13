@@ -1,12 +1,15 @@
-// components/BuyNumber.tsx
+// app/buy/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
-import { Loader2, ShoppingCart, RefreshCw, Terminal, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, ShoppingCart, Terminal, ChevronLeft, ChevronRight, Search } from "lucide-react";
 
 const API_KEY = process.env.NEXT_PUBLIC_RUMAHOTP_API_KEY || "";
-const BASE_URL = "https://www.rumahotp.io/api/v2";
+const BASE_URL = "[rumahotp.io](https://www.rumahotp.io/api/v2)";
+
+const ITEMS_PER_PAGE = 12;
 
 interface Service {
   service_code: number;
@@ -14,47 +17,13 @@ interface Service {
   service_img: string;
 }
 
-interface Country {
-  number_id: number;
-  name: string;
-  img: string;
-  prefix: string;
-  rate: number;
-  stock_total: number;
-  pricelist: Array<{
-    provider_id: string;
-    server_id: number;
-    stock: number;
-    price: number;
-    price_format: string;
-    available: boolean;
-  }>;
-}
-
-interface Operator {
-  id: number;
-  name: string;
-  image: string;
-}
-
-export default function BuyNumber() {
+export default function BuyPage() {
+  const router = useRouter();
   const [services, setServices] = useState<Service[]>([]);
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [operators, setOperators] = useState<Operator[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const [selectedService, setSelectedService] = useState<number | null>(null);
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
-  const [selectedOperator, setSelectedOperator] = useState<number | null>(null);
-
-  const [loadingServices, setLoadingServices] = useState(true);
-  const [loadingCountries, setLoadingCountries] = useState(false);
-  const [loadingOperators, setLoadingOperators] = useState(false);
-  const [buying, setBuying] = useState(false);
-
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState<"success" | "error" | "">("");
-
-  // Load Services
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -64,245 +33,157 @@ export default function BuyNumber() {
         if (res.data.success) setServices(res.data.data);
       } catch (err) {
         console.error(err);
-        setMessage("Gagal memuat daftar layanan");
-        setMessageType("error");
       } finally {
-        setLoadingServices(false);
+        setLoading(false);
       }
     };
     fetchServices();
   }, []);
 
-  // Load Countries ketika service dipilih
+  // Filter services berdasarkan search
+  const filteredServices = services.filter((s) =>
+    s.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Pagination
+  const totalPages = Math.ceil(filteredServices.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedServices = filteredServices.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  // Reset page ketika search berubah
   useEffect(() => {
-    if (!selectedService) return;
+    setCurrentPage(1);
+  }, [searchQuery]);
 
-    const fetchCountries = async () => {
-      setLoadingCountries(true);
-      setCountries([]);
-      setSelectedCountry(null);
-
-      try {
-        const res = await axios.get(`${BASE_URL}/countries?service_id=${selectedService}`, {
-          headers: { "x-apikey": API_KEY, Accept: "application/json" },
-        });
-        if (res.data.success) setCountries(res.data.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoadingCountries(false);
-      }
-    };
-
-    fetchCountries();
-  }, [selectedService]);
-
-  // Load Operators ketika negara dipilih
-  useEffect(() => {
-    if (!selectedCountry) return;
-
-    const fetchOperators = async () => {
-      setLoadingOperators(true);
-      setOperators([]);
-
-      try {
-        const res = await axios.get(
-          `${BASE_URL}/operators?country=${selectedCountry.name}&provider_id=${selectedCountry.pricelist[0]?.provider_id || ""}`,
-          {
-            headers: { "x-apikey": API_KEY, Accept: "application/json" },
-          }
-        );
-        if (res.data.success) setOperators(res.data.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoadingOperators(false);
-      }
-    };
-
-    fetchOperators();
-  }, [selectedCountry]);
-
-  const handleBuy = async () => {
-    if (!selectedService || !selectedCountry || !selectedOperator) {
-      setMessage("Pilih layanan, negara, dan operator terlebih dahulu!");
-      setMessageType("error");
-      return;
-    }
-
-    setBuying(true);
-    setMessage("");
-    setMessageType("");
-
-    try {
-      const res = await axios.get(`${BASE_URL}/orders`, {
-        headers: { "x-apikey": API_KEY },
-        params: {
-          service_id: selectedService,
-          number_id: selectedCountry.number_id,
-          operator_id: selectedOperator,
-          provider_id: selectedCountry.pricelist[0]?.provider_id,
-        },
-      });
-
-      if (res.data.success) {
-        setMessage(`Berhasil! Nomor: ${res.data.data.number || "Sedang diproses"}`);
-        setMessageType("success");
-      } else {
-        setMessage("Gagal membeli nomor. Coba lagi.");
-        setMessageType("error");
-      }
-    } catch (err: any) {
-      setMessage(err.response?.data?.message || "Terjadi kesalahan saat membeli nomor");
-      setMessageType("error");
-    } finally {
-      setBuying(false);
-    }
+  const handleSelectService = (serviceCode: number) => {
+    router.push(`/buy/${serviceCode}`);
   };
 
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-            <ShoppingCart size={18} className="text-gray-600" />
-          </div>
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800">Beli Nomor Virtual</h2>
-            <div className="flex items-center gap-2 mt-0.5">
-              <Terminal size={10} className="text-gray-400" />
-              <span className="text-[10px] font-mono text-gray-400 tracking-wide">ORDER_NUMBER</span>
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 mb-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center">
+              <ShoppingCart size={20} className="text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">Beli Nomor Virtual</h1>
+              <div className="flex items-center gap-2 mt-0.5">
+                <Terminal size={10} className="text-gray-400" />
+                <span className="text-[10px] font-mono text-gray-400 tracking-wide">STEP 1: PILIH LAYANAN</span>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Message */}
-      {message && (
-        <div className={`mb-6 p-3 rounded-lg flex items-center gap-2 ${
-          messageType === "success" 
-            ? "bg-green-50 border border-green-100 text-green-700" 
-            : "bg-red-50 border border-red-100 text-red-700"
-        }`}>
-          {messageType === "success" ? (
-            <CheckCircle size={14} />
-          ) : (
-            <XCircle size={14} />
-          )}
-          <span className="text-sm">{message}</span>
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Cari layanan... (WhatsApp, Telegram, dll)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all"
+            />
+          </div>
         </div>
-      )}
 
-      {/* Pilih Layanan */}
-      <div className="mb-8">
-        <label className="block text-xs font-mono text-gray-500 tracking-wider mb-3">PILIH LAYANAN</label>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {loadingServices ? (
-            <div className="col-span-full flex justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+        {/* Services Grid */}
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+          {loading ? (
+            <div className="flex justify-center py-16">
+              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
             </div>
           ) : (
-            services.map((service) => (
-              <button
-                key={service.service_code}
-                onClick={() => setSelectedService(service.service_code)}
-                className={`p-3 rounded-xl border transition-all duration-300 flex flex-col items-center gap-2 ${
-                  selectedService === service.service_code
-                    ? "border-gray-400 bg-gray-50"
-                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                <img src={service.service_img} alt={service.service_name} className="w-10 h-10 object-contain" />
-                <span className="text-xs font-medium text-gray-700 text-center">{service.service_name}</span>
-              </button>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* Pilih Negara */}
-      {selectedService && (
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-3">
-            <label className="block text-xs font-mono text-gray-500 tracking-wider">PILIH NEGARA</label>
-            {loadingCountries && <RefreshCw className="w-4 h-4 animate-spin text-gray-400" />}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {countries.map((country) => {
-              const priceInfo = country.pricelist[0];
-              return (
-                <button
-                  key={country.number_id}
-                  onClick={() => setSelectedCountry(country)}
-                  className={`p-4 rounded-xl border transition-all duration-300 text-left ${
-                    selectedCountry?.number_id === country.number_id
-                      ? "border-gray-400 bg-gray-50"
-                      : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <img src={country.img} alt={country.name} className="w-8 h-6 rounded object-cover" />
-                    <div className="flex-1">
-                      <p className="font-semibold text-gray-800 text-sm">{country.name}</p>
-                      <p className="text-xs text-gray-400 font-mono">{country.prefix}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-gray-800">{priceInfo?.price_format}</p>
-                      <p className="text-[10px] text-gray-500">Stok: {country.stock_total}</p>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Pilih Operator */}
-      {selectedCountry && (
-        <div className="mb-8">
-          <label className="block text-xs font-mono text-gray-500 tracking-wider mb-3">PILIH OPERATOR</label>
-          <div className="flex flex-wrap gap-2">
-            {loadingOperators ? (
-              <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
-            ) : (
-              operators.map((op) => (
-                <button
-                  key={op.id}
-                  onClick={() => setSelectedOperator(op.id)}
-                  className={`px-4 py-2 rounded-lg border transition-all duration-300 flex items-center gap-2 ${
-                    selectedOperator === op.id
-                      ? "border-gray-400 bg-gray-50"
-                      : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                  }`}
-                >
-                  <img src={op.image} alt={op.name} className="w-5 h-5" />
-                  <span className="text-sm text-gray-700 capitalize">{op.name}</span>
-                </button>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Tombol Beli */}
-      {selectedService && selectedCountry && selectedOperator && (
-        <button
-          onClick={handleBuy}
-          disabled={buying}
-          className="w-full py-3 bg-gray-900 text-white font-medium text-base rounded-xl hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          {buying ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" /> Memproses...
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {paginatedServices.map((service) => (
+                  <button
+                    key={service.service_code}
+                    onClick={() => handleSelectService(service.service_code)}
+                    className="group p-4 rounded-xl border border-gray-200 hover:border-gray-400 hover:shadow-md transition-all duration-300 flex flex-col items-center gap-3"
+                  >
+                    <div className="w-14 h-14 rounded-xl bg-gray-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <img
+                        src={service.service_img}
+                        alt={service.service_name}
+                        className="w-10 h-10 object-contain"
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700 text-center line-clamp-2">
+                      {service.service_name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Empty State */}
+              {paginatedServices.length === 0 && (
+                <div className="text-center py-16 text-gray-500">
+                  <p>Layanan tidak ditemukan</p>
+                </div>
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-8 pt-6 border-t border-gray-100">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter((page) => {
+                        // Show first, last, current, and neighbors
+                        return (
+                          page === 1 ||
+                          page === totalPages ||
+                          Math.abs(page - currentPage) <= 1
+                        );
+                      })
+                      .map((page, idx, arr) => (
+                        <div key={page} className="flex items-center">
+                          {idx > 0 && arr[idx - 1] !== page - 1 && (
+                            <span className="px-2 text-gray-400">...</span>
+                          )}
+                          <button
+                            onClick={() => setCurrentPage(page)}
+                            className={`w-10 h-10 rounded-lg font-medium transition-all ${
+                              currentPage === page
+                                ? "bg-gray-900 text-white"
+                                : "border border-gray-200 hover:bg-gray-50 text-gray-700"
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+              )}
+
+              {/* Info */}
+              <div className="text-center mt-4 text-xs text-gray-400">
+                Menampilkan {startIndex + 1}-{Math.min(startIndex + ITEMS_PER_PAGE, filteredServices.length)} dari {filteredServices.length} layanan
+              </div>
             </>
-          ) : (
-            "Beli Nomor Sekarang"
           )}
-        </button>
-      )}
+        </div>
+      </div>
     </div>
   );
 }
