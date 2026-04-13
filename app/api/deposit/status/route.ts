@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import axios from "axios";
 
-const API_KEY = process.env.RUMAHOTP_API_KEY || process.env.NEXT_PUBLIC_RUMAHOTP_API_KEY || "";
-const BASE_URL = "https://www.rumahotp.io/api/v2";
-
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
   const deposit_id = searchParams.get("deposit_id");
 
   if (!deposit_id) {
@@ -15,24 +13,27 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const res = await fetch(
-      `${BASE_URL}/deposit/get_status?deposit_id=${deposit_id}`,
+    const response = await axios.get(
+      `https://www.rumahotp.io/api/v2/deposit/get_status`,
       {
-        method: "GET",
+        params: { deposit_id },
         headers: {
-          "x-apikey": API_KEY,
+          "x-apikey": process.env.RUMAHOTP_API_KEY!,
           Accept: "application/json",
         },
       }
     );
 
-    const data = await res.json();
-    return NextResponse.json(data);
-  } catch (error: any) {
-    console.error("Deposit status error:", error);
+    return NextResponse.json(response.data);
+  } catch (err: any) {
+    const msg =
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      err.message ||
+      "Unknown error";
     return NextResponse.json(
-      { success: false, message: error.message || "Server error" },
-      { status: 500 }
+      { success: false, message: msg },
+      { status: err.response?.status || 500 }
     );
   }
 }
