@@ -16,13 +16,16 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    const current = getCurrentUser();
-    if (!current) {
-      router.push("/auth/login");
-      return;
-    }
-    setUser(current);
-    fetchBalance();
+    const loadUser = async () => {
+      const current = await getCurrentUser();
+      if (!current) {
+        router.push("/auth/login");
+        return;
+      }
+      setUser(current);
+      fetchBalance();
+    };
+    loadUser();
   }, [router]);
 
   const fetchBalance = async () => {
@@ -50,8 +53,8 @@ export default function Dashboard() {
     }
   };
 
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    await logoutUser();
     router.push("/");
   };
 

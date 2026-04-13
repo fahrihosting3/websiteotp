@@ -1,91 +1,100 @@
 // lib/auth.ts
+import { createClient } from "@/lib/supabase/client";
+
 export type User = {
   id: string;
-  username: string;
   email: string;
   name: string;
   balance: number;
-  createdAt: string;
+  created_at: string;
 };
+
 export async function registerUser(email: string, password: string, name: string) {
-  const res = await fetch("/api/users/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, password }),
+  const supabase = createClient();
+  
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ?? 
+        `${window.location.origin}/auth/callback`,
+      data: {
+        name,
+      },
+    },
   });
 
-  // Handle empty response
-  const text = await res.text();
-  if (!text) {
-    throw new Error("Server tidak merespons. Pastikan environment variables sudah diset dengan benar.");
-  }
-
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new Error("Response dari server tidak valid: " + text.substring(0, 100));
-  }
-
-  if (!res.ok) throw new Error(data.error || "Registrasi gagal");
+  if (error) throw new Error(error.message);
   return data;
 }
 
-export const loginUser = (email: string, password: string): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
-      const user = users.find(u => u.email === email);
-
-      if (!user) {
-        reject(new Error("Email atau password salah"));
-        return;
-      }
-
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      resolve(user);
-    }, 700);
+export async function loginUser(email: string, password: string) {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
   });
-};
 
-export const logoutUser = () => {
-  localStorage.removeItem("currentUser");
-};
+  if (error) throw new Error(error.message);
+  return data.user;
+}
 
-export const getCurrentUser = (): User | null => {
-  const user = localStorage.getItem("currentUser");
-  return user ? JSON.parse(user) : null;
-};
+export async function logoutUser() {
+  const supabase = createClient();
+  await supabase.auth.signOut();
+}
 
-export const updateUserBalance = (amount: number): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-      reject(new Error("User tidak ditemukan"));
-      return;
-    }
+export async function getCurrentUser(): Promise<User | null> {
+  const supabase = createClient();
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
 
-    const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
-    const userIndex = users.findIndex(u => u.id === currentUser.id);
+  // Get profile data
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
 
-    if (userIndex === -1) {
-      reject(new Error("User tidak ditemukan di database"));
-      return;
-    }
+  return {
+    id: user.id,
+    email: user.email || "",
+    name: profile?.name || user.user_metadata?.name || "",
+    balance: profile?.balance || 0,
+    created_at: profile?.created_at || user.created_at,
+  };
+}
 
-    // Update balance
-    const currentBalance = users[userIndex].balance || 0;
-    users[userIndex].balance = currentBalance + amount;
+export async function updateUserBalance(amount: number): Promise<User | null> {
+  const supabase = createClient();
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("User tidak ditemukan");
 
-    // Save to localStorage
-    localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("currentUser", JSON.stringify(users[userIndex]));
+  // Get current balance
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("balance")
+    .eq("id", user.id)
+    .single();
 
-    resolve(users[userIndex]);
-  });
-};
+  const currentBalance = profile?.balance || 0;
+  const newBalance = currentBalance + amount;
 
-export const getUserBalance = (): number => {
-  const user = getCurrentUser();
+  // Update balance
+  const { error } = await supabase
+    .from("profiles")
+    .update({ balance: newBalance, updated_at: new Date().toISOString() })
+    .eq("id", user.id);
+
+  if (error) throw new Error(error.message);
+
+  return getCurrentUser();
+}
+
+export async function getUserBalance(): Promise<number> {
+  const user = await getCurrentUser();
   return user?.balance || 0;
-};
+}
