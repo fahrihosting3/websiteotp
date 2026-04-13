@@ -14,138 +14,138 @@ export default function Footer() {
         }}></div>
       </div>
       
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Main Footer Content - Grid lebih rapi */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {/* Main Footer Content - Layout lebih compact */}
+        <div className="flex flex-col lg:flex-row justify-between gap-8 mb-8">
           
-          {/* Brand Section */}
-          <div className="space-y-3">
+          {/* Brand Section - Kiri */}
+          <div className="lg:w-1/3 space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
                 <Terminal size={16} className="text-gray-400" />
               </div>
               <span className="font-semibold text-lg text-white tracking-tight">RUMA OTP</span>
             </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
+            <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
               Platform nomor virtual OTP tercepat dan termurah di Indonesia.
             </p>
-            <div className="flex gap-4 pt-2">
+            <div className="flex gap-3 pt-2">
               <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors">
-                <Github size={16} />
+                <Github size={15} />
               </a>
               <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors">
-                <Twitter size={16} />
+                <Twitter size={15} />
               </a>
               <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors">
-                <Globe size={16} />
+                <Globe size={15} />
               </a>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-gray-400 text-xs font-mono tracking-wider mb-4">MENU</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
-                  Beranda
-                </Link>
-              </li>
-              <li>
-                <Link href="/#fitur" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
-                  Fitur
-                </Link>
-              </li>
-              <li>
-                <Link href="/auth/register" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
-                  Daftar
-                </Link>
-              </li>
-              <li>
-                <Link href="/auth/login" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
-                  Masuk
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {/* Menu & Layanan - Kanan (2 columns) */}
+          <div className="lg:w-2/3">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              {/* Menu */}
+              <div>
+                <h3 className="text-gray-500 text-xs font-mono tracking-wider mb-3">MENU</h3>
+                <ul className="space-y-1.5">
+                  <li>
+                    <Link href="/" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
+                      Beranda
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/#fitur" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
+                      Fitur
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/auth/register" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
+                      Daftar
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/auth/login" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
+                      Masuk
+                    </Link>
+                  </li>
+                </ul>
+              </div>
 
-          {/* Services */}
-          <div>
-            <h3 className="text-gray-400 text-xs font-mono tracking-wider mb-4">LAYANAN</h3>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
-                  WhatsApp
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
-                  Telegram
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
-                  Instagram
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
-                  TikTok
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
-                  Shopee
-                </a>
-              </li>
-            </ul>
-          </div>
+              {/* Layanan */}
+              <div>
+                <h3 className="text-gray-500 text-xs font-mono tracking-wider mb-3">LAYANAN</h3>
+                <ul className="space-y-1.5">
+                  <li>
+                    <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
+                      WhatsApp
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
+                      Telegram
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
+                      Instagram
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
+                      TikTok
+                    </a>
+                  </li>
+                </ul>
+              </div>
 
-          {/* Contact */}
-          <div>
-            <h3 className="text-gray-400 text-xs font-mono tracking-wider mb-4">KONTAK</h3>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-2">
-                <Mail size={12} className="text-gray-500 flex-shrink-0" />
-                <a href="mailto:support@rumahotp.com" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
-                  support@rumahotp.com
-                </a>
-              </li>
-              <li className="flex items-center gap-2">
-                <Phone size={12} className="text-gray-500 flex-shrink-0" />
-                <a href="tel:+6281234567890" className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
-                  +62 812-3456-7890
-                </a>
-              </li>
-              <li className="flex items-center gap-2">
-                <MapPin size={12} className="text-gray-500 flex-shrink-0" />
-                <span className="text-gray-500 text-sm">
-                  Jakarta, Indonesia
-                </span>
-              </li>
-            </ul>
+              {/* Kontak */}
+              <div>
+                <h3 className="text-gray-500 text-xs font-mono tracking-wider mb-3">KONTAK</h3>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <Mail size={11} className="text-gray-500 flex-shrink-0" />
+                    <a href="mailto:support@rumahotp.com" className="text-gray-500 hover:text-gray-300 transition-colors text-xs">
+                      support@rumahotp.com
+                    </a>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Phone size={11} className="text-gray-500 flex-shrink-0" />
+                    <a href="tel:+6281234567890" className="text-gray-500 hover:text-gray-300 transition-colors text-xs">
+                      +62 812-3456-7890
+                    </a>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <MapPin size={11} className="text-gray-500 flex-shrink-0" />
+                    <span className="text-gray-500 text-xs">
+                      Jakarta, Indonesia
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-gray-800 my-6"></div>
+        <div className="h-px bg-gray-800 my-5"></div>
 
-        {/* Bottom Footer - Rapi & Simple */}
+        {/* Bottom Footer */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-gray-500 text-xs">
             © 2026 RUMA OTP. All rights reserved.
           </p>
           <div className="flex gap-4">
             <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-xs">
-              Privacy Policy
+              Privacy
             </a>
             <span className="text-gray-700 text-xs">•</span>
             <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-xs">
-              Terms of Service
+              Terms
             </a>
             <span className="text-gray-700 text-xs">•</span>
             <a href="#" className="text-gray-500 hover:text-gray-300 transition-colors text-xs">
-              Contact Us
+              Contact
             </a>
           </div>
         </div>
