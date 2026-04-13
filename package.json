@@ -13,6 +13,8 @@
     "@types/node": "^20.12.7",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
+    "uuid": "^9.0.0",
+  "bcryptjs": "^2.4.3",
     "axios": "^1.7.2",
     "lucide-react": "^0.441.0",
     "next": "14.2.5",
@@ -22,6 +24,8 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",
+    "@types/uuid": "^9.0.0",
+  "@types/bcryptjs": "^2.4.6",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.5",
     "postcss": "^8.4.38",
