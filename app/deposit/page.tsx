@@ -19,8 +19,7 @@ import {
   Check,
 } from "lucide-react";
 
-const API_KEY = process.env.NEXT_PUBLIC_RUMAHOTP_API_KEY || "";
-const BASE_URL = "https://www.rumahotp.io/api/v2";
+
 
 interface DepositData {
   id: string;
@@ -98,13 +97,7 @@ function DepositContent() {
     setLoading(true);
     try {
       const res = await axios.get(
-        `${BASE_URL}/deposit/create?amount=${amount}&payment_id=${selectedMethod}`,
-        {
-          headers: {
-            "x-apikey": API_KEY,
-            Accept: "application/json",
-          },
-        }
+        `/api/deposit/create?amount=${amount}&payment_id=${selectedMethod}`
       );
 
       if (res.data.success) {
@@ -125,13 +118,7 @@ function DepositContent() {
     setCheckingStatus(true);
     try {
       const res = await axios.get(
-        `${BASE_URL}/deposit/get_status?deposit_id=${depositData.id}`,
-        {
-          headers: {
-            "x-apikey": API_KEY,
-            Accept: "application/json",
-          },
-        }
+        `/api/deposit/status?deposit_id=${depositData.id}`
       );
 
       if (res.data.success) {
