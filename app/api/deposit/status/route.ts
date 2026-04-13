@@ -14,24 +14,38 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  try {
-    const res = await fetch(
-      `${BASE_URL}/deposit/get_status?deposit_id=${deposit_id}`,
-      {
-        method: "GET",
-        headers: {
-          "x-apikey": API_KEY,
-          Accept: "application/json",
-        },
-      }
+  if (!API_KEY) {
+    return NextResponse.json(
+      { success: false, message: "API key tidak dikonfigurasi" },
+      { status: 500 }
     );
+  }
+
+  try {
+    const url = `${BASE_URL}/deposit/get_status?deposit_id=${deposit_id}`;
+    
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        "x-apikey": API_KEY,
+        "Accept": "application/json",
+      },
+    });
 
     const data = await res.json();
+    
+    if (!res.ok) {
+      return NextResponse.json(
+        { success: false, message: data.message || `HTTP Error: ${res.status}` },
+        { status: res.status }
+      );
+    }
+
     return NextResponse.json(data);
   } catch (error: any) {
     console.error("Deposit status error:", error);
     return NextResponse.json(
-      { success: false, message: error.message || "Server error" },
+      { success: false, message: error.message || "Gagal cek status" },
       { status: 500 }
     );
   }

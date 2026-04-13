@@ -4,7 +4,6 @@ import { useEffect, useState, Suspense } from "react";
 import { getCurrentUser } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import axios from "axios";
 import {
   ArrowLeft,
   Loader2,
@@ -17,9 +16,9 @@ import {
   RefreshCw,
   Copy,
   Check,
+  Wallet,
+  AlertCircle,
 } from "lucide-react";
-
-
 
 interface DepositData {
   id: string;
@@ -36,24 +35,25 @@ interface DepositData {
 }
 
 const PAYMENT_METHODS = [
-  { id: "qris", name: "QRIS", description: "Scan dengan e-wallet apapun" },
-  { id: "dana", name: "DANA", description: "Transfer via DANA" },
-  { id: "ovo", name: "OVO", description: "Transfer via OVO" },
-  { id: "gopay", name: "GoPay", description: "Transfer via GoPay" },
-  { id: "shopeepay", name: "ShopeePay", description: "Transfer via ShopeePay" },
+  { id: "qris", name: "QRIS", icon: "https://assets.cindigital.id/h2h/brand/qris.webp" },
+  { id: "dana", name: "DANA", icon: "https://assets.cindigital.id/h2h/brand/dana.webp" },
+  { id: "ovo", name: "OVO", icon: "https://assets.cindigital.id/h2h/brand/ovo.webp" },
+  { id: "gopay", name: "GoPay", icon: "https://assets.cindigital.id/h2h/brand/gopay.webp" },
+  { id: "shopeepay", name: "ShopeePay", icon: "https://assets.cindigital.id/h2h/brand/shopeepay.webp" },
 ];
 
 const PRESET_AMOUNTS = [10000, 25000, 50000, 100000, 250000, 500000];
 
 function DepositContent() {
   const [user, setUser] = useState<any>(null);
-  const [amount, setAmount] = useState<string>("");
+  const [amount, setAmount] = useState<string>("10000");
   const [selectedMethod, setSelectedMethod] = useState<string>("qris");
   const [loading, setLoading] = useState(false);
   const [depositData, setDepositData] = useState<DepositData | null>(null);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -90,23 +90,25 @@ function DepositContent() {
 
   const createDeposit = async () => {
     if (!amount || parseInt(amount) < 1000) {
-      alert("Minimal deposit Rp1.000");
+      setError("Minimal deposit Rp1.000");
       return;
     }
 
     setLoading(true);
-    try {
-      const res = await axios.get(
-        `/api/deposit/create?amount=${amount}&payment_id=${selectedMethod}`
-      );
+    setError(null);
 
-      if (res.data.success) {
-        setDepositData(res.data.data);
+    try {
+      const res = await fetch(`/api/deposit/create?amount=${amount}&payment_id=${selectedMethod}`);
+      const data = await res.json();
+
+      if (data.success && data.data) {
+        setDepositData(data.data);
+        setError(null);
       } else {
-        alert("Gagal membuat deposit: " + (res.data.message || "Unknown error"));
+        setError(data.message || "Gagal membuat deposit");
       }
     } catch (err: any) {
-      alert("Error: " + (err.response?.data?.message || err.message));
+      setError(err.message || "Terjadi kesalahan");
     } finally {
       setLoading(false);
     }
@@ -117,14 +119,13 @@ function DepositContent() {
 
     setCheckingStatus(true);
     try {
-      const res = await axios.get(
-        `/api/deposit/status?deposit_id=${depositData.id}`
-      );
+      const res = await fetch(`/api/deposit/status?deposit_id=${depositData.id}`);
+      const data = await res.json();
 
-      if (res.data.success) {
+      if (data.success && data.data) {
         setDepositData((prev) => ({
           ...prev!,
-          status: res.data.data.status,
+          status: data.data.status,
         }));
       }
     } catch (err) {
@@ -142,7 +143,7 @@ function DepositContent() {
 
   const resetDeposit = () => {
     setDepositData(null);
-    setAmount("");
+    setError(null);
   };
 
   const formatRupiah = (num: number) => {
@@ -156,140 +157,106 @@ function DepositContent() {
   if (!user) return null;
 
   return (
-    <div
-      className="min-h-screen w-full overflow-x-hidden"
-      style={{ background: "#FFFEF0" }}
-    >
+    <div className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FFFEF0" }}>
       <Navbar />
 
-      <div
-        style={{
-          fontFamily: "'Space Mono', 'Courier New', monospace",
-          minHeight: "calc(100vh - 80px)",
-        }}
-      >
+      <div style={{ fontFamily: "'Space Mono', 'Courier New', monospace" }}>
         {/* Header */}
         <div
           style={{
             background: "#0A0A0A",
             borderBottom: "4px solid #10B981",
-            padding: "24px 16px 20px",
+            padding: "20px 16px",
           }}
-          className="sm:px-10 sm:py-8"
         >
-          <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+          <div style={{ maxWidth: "600px", margin: "0 auto" }}>
             <button
               onClick={() => router.push("/dashboard")}
               style={{
                 background: "transparent",
                 border: "2px solid #10B981",
                 color: "#10B981",
-                padding: "8px 16px",
+                padding: "6px 12px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: "8px",
+                gap: "6px",
                 fontFamily: "'Space Mono', monospace",
                 fontWeight: "700",
-                fontSize: "12px",
-                marginBottom: "20px",
+                fontSize: "11px",
+                marginBottom: "16px",
               }}
             >
-              <ArrowLeft size={14} />
+              <ArrowLeft size={12} />
               KEMBALI
             </button>
 
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <div
                 style={{
-                  width: "48px",
-                  height: "48px",
+                  width: "44px",
+                  height: "44px",
                   background: "#10B981",
-                  border: "3px solid #10B981",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <CreditCard size={24} style={{ color: "#0A0A0A" }} />
+                <Wallet size={22} style={{ color: "#0A0A0A" }} />
               </div>
               <div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    marginBottom: "4px",
-                  }}
-                >
-                  <Terminal size={10} style={{ color: "#10B981" }} />
-                  <span
-                    style={{
-                      color: "#10B981",
-                      fontSize: "10px",
-                      letterSpacing: "3px",
-                      fontWeight: "700",
-                    }}
-                  >
-                    TOP UP SALDO
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
+                  <Terminal size={8} style={{ color: "#10B981" }} />
+                  <span style={{ color: "#10B981", fontSize: "9px", letterSpacing: "2px", fontWeight: "700" }}>
+                    TOP UP
                   </span>
                 </div>
-                <h1
-                  style={{
-                    color: "#FFFFFF",
-                    fontSize: "24px",
-                    fontWeight: "900",
-                    letterSpacing: "-0.5px",
-                  }}
-                >
-                  DEPOSIT
-                </h1>
+                <h1 style={{ color: "#FFFFFF", fontSize: "20px", fontWeight: "900" }}>DEPOSIT SALDO</h1>
               </div>
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <div
-          style={{ padding: "24px 16px", maxWidth: "800px", margin: "0 auto" }}
-          className="sm:px-10 sm:py-8"
-        >
+        <div style={{ padding: "20px 16px", maxWidth: "600px", margin: "0 auto" }}>
+          {/* Error Message */}
+          {error && (
+            <div
+              style={{
+                background: "#FEE2E2",
+                border: "3px solid #EF4444",
+                padding: "12px 16px",
+                marginBottom: "16px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <AlertCircle size={18} style={{ color: "#EF4444", flexShrink: 0 }} />
+              <span style={{ fontSize: "12px", fontWeight: "600", color: "#B91C1C" }}>{error}</span>
+            </div>
+          )}
+
           {!depositData ? (
-            // Form Create Deposit
+            /* ============ FORM CREATE DEPOSIT ============ */
             <div>
-              {/* Amount Input */}
+              {/* Amount Section */}
               <div
                 style={{
                   background: "#FFFFFF",
-                  border: "4px solid #0A0A0A",
-                  padding: "24px",
-                  marginBottom: "24px",
-                  boxShadow: "6px 6px 0 #0A0A0A",
+                  border: "3px solid #0A0A0A",
+                  padding: "20px",
+                  marginBottom: "16px",
+                  boxShadow: "4px 4px 0 #0A0A0A",
                 }}
               >
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "10px",
-                    letterSpacing: "2px",
-                    fontWeight: "900",
-                    color: "#0A0A0A",
-                    marginBottom: "12px",
-                  }}
-                >
+                <label style={{ display: "block", fontSize: "10px", letterSpacing: "2px", fontWeight: "900", marginBottom: "10px" }}>
                   NOMINAL DEPOSIT
                 </label>
-                <div style={{ position: "relative" }}>
-                  <span
-                    style={{
-                      position: "absolute",
-                      left: "16px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      fontWeight: "700",
-                      color: "#666",
-                    }}
-                  >
+                
+                {/* Input */}
+                <div style={{ position: "relative", marginBottom: "12px" }}>
+                  <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontWeight: "700", color: "#666", fontSize: "14px" }}>
                     Rp
                   </span>
                   <input
@@ -299,9 +266,9 @@ function DepositContent() {
                     placeholder="10000"
                     style={{
                       width: "100%",
-                      padding: "16px 16px 16px 48px",
+                      padding: "12px 12px 12px 40px",
                       border: "3px solid #0A0A0A",
-                      fontSize: "24px",
+                      fontSize: "20px",
                       fontWeight: "900",
                       fontFamily: "'Space Mono', monospace",
                       background: "#FFFEF0",
@@ -310,37 +277,24 @@ function DepositContent() {
                 </div>
 
                 {/* Preset Amounts */}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: "8px",
-                    marginTop: "16px",
-                  }}
-                  className="sm:grid-cols-6"
-                >
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "6px" }}>
                   {PRESET_AMOUNTS.map((preset) => (
                     <button
                       key={preset}
                       onClick={() => setAmount(preset.toString())}
                       style={{
-                        padding: "10px",
+                        padding: "8px 4px",
                         border: "2px solid #0A0A0A",
-                        background:
-                          amount === preset.toString() ? "#10B981" : "#FFFFFF",
-                        color:
-                          amount === preset.toString() ? "#FFFFFF" : "#0A0A0A",
+                        background: amount === preset.toString() ? "#10B981" : "#FFFFFF",
+                        color: amount === preset.toString() ? "#FFFFFF" : "#0A0A0A",
                         fontWeight: "700",
-                        fontSize: "11px",
+                        fontSize: "10px",
                         cursor: "pointer",
                         fontFamily: "'Space Mono', monospace",
-                        boxShadow:
-                          amount === preset.toString()
-                            ? "3px 3px 0 #0A0A0A"
-                            : "none",
+                        transition: "all 0.1s",
                       }}
                     >
-                      {formatRupiah(preset)}
+                      {preset >= 1000 ? `${preset / 1000}K` : preset}
                     </button>
                   ))}
                 </div>
@@ -350,79 +304,42 @@ function DepositContent() {
               <div
                 style={{
                   background: "#FFFFFF",
-                  border: "4px solid #0A0A0A",
-                  padding: "24px",
-                  marginBottom: "24px",
-                  boxShadow: "6px 6px 0 #0A0A0A",
+                  border: "3px solid #0A0A0A",
+                  padding: "20px",
+                  marginBottom: "16px",
+                  boxShadow: "4px 4px 0 #0A0A0A",
                 }}
               >
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "10px",
-                    letterSpacing: "2px",
-                    fontWeight: "900",
-                    color: "#0A0A0A",
-                    marginBottom: "12px",
-                  }}
-                >
+                <label style={{ display: "block", fontSize: "10px", letterSpacing: "2px", fontWeight: "900", marginBottom: "10px" }}>
                   METODE PEMBAYARAN
                 </label>
-                <div
-                  style={{
-                    display: "grid",
-                    gap: "8px",
-                  }}
-                >
+                
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }} className="sm:grid-cols-5">
                   {PAYMENT_METHODS.map((method) => (
                     <button
                       key={method.id}
                       onClick={() => setSelectedMethod(method.id)}
                       style={{
-                        padding: "16px",
-                        border: "3px solid #0A0A0A",
-                        background:
-                          selectedMethod === method.id ? "#10B981" : "#FFFFFF",
-                        color:
-                          selectedMethod === method.id ? "#FFFFFF" : "#0A0A0A",
+                        padding: "12px 8px",
+                        border: selectedMethod === method.id ? "3px solid #10B981" : "2px solid #E5E5E5",
+                        background: selectedMethod === method.id ? "#ECFDF5" : "#FFFFFF",
                         cursor: "pointer",
                         display: "flex",
+                        flexDirection: "column",
                         alignItems: "center",
-                        justifyContent: "space-between",
-                        boxShadow:
-                          selectedMethod === method.id
-                            ? "4px 4px 0 #0A0A0A"
-                            : "none",
-                        transform:
-                          selectedMethod === method.id
-                            ? "translate(-2px, -2px)"
-                            : "none",
+                        gap: "6px",
                         transition: "all 0.1s",
                       }}
                     >
-                      <div style={{ textAlign: "left" }}>
-                        <div
-                          style={{
-                            fontWeight: "900",
-                            fontSize: "14px",
-                            fontFamily: "'Space Mono', monospace",
-                          }}
-                        >
-                          {method.name}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "11px",
-                            opacity: 0.8,
-                            marginTop: "2px",
-                          }}
-                        >
-                          {method.description}
-                        </div>
-                      </div>
-                      {selectedMethod === method.id && (
-                        <CheckCircle size={20} />
-                      )}
+                      <img
+                        src={method.icon}
+                        alt={method.name}
+                        style={{ width: "32px", height: "32px", objectFit: "contain" }}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                      <span style={{ fontSize: "9px", fontWeight: "700", color: "#0A0A0A" }}>{method.name}</span>
                     </button>
                   ))}
                 </div>
@@ -434,296 +351,120 @@ function DepositContent() {
                 disabled={loading || !amount}
                 style={{
                   width: "100%",
-                  padding: "20px",
+                  padding: "16px",
                   background: loading || !amount ? "#CCC" : "#10B981",
-                  border: "4px solid #0A0A0A",
+                  border: "3px solid #0A0A0A",
                   color: "#FFFFFF",
                   fontWeight: "900",
-                  fontSize: "16px",
+                  fontSize: "14px",
                   cursor: loading || !amount ? "not-allowed" : "pointer",
                   fontFamily: "'Space Mono', monospace",
-                  letterSpacing: "2px",
-                  boxShadow: "6px 6px 0 #0A0A0A",
+                  letterSpacing: "1px",
+                  boxShadow: "4px 4px 0 #0A0A0A",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: "12px",
+                  gap: "10px",
                 }}
               >
                 {loading ? (
                   <>
-                    <Loader2 size={20} className="animate-spin" />
+                    <Loader2 size={18} className="animate-spin" />
                     MEMPROSES...
                   </>
                 ) : (
                   <>
-                    <CreditCard size={20} />
+                    <CreditCard size={18} />
                     BUAT DEPOSIT
                   </>
                 )}
               </button>
             </div>
           ) : (
-            // Deposit Created - Show QR/Payment Info
+            /* ============ DEPOSIT RESULT ============ */
             <div>
-              {/* Status Card */}
+              {/* Status Banner */}
               <div
                 style={{
-                  background:
-                    depositData.status === "success"
-                      ? "#10B981"
-                      : depositData.status === "cancel"
-                      ? "#EF4444"
-                      : "#FFD600",
-                  border: "4px solid #0A0A0A",
-                  padding: "20px",
-                  marginBottom: "24px",
-                  boxShadow: "6px 6px 0 #0A0A0A",
+                  background: depositData.status === "success" ? "#10B981" : depositData.status === "cancel" ? "#EF4444" : "#FFD600",
+                  border: "3px solid #0A0A0A",
+                  padding: "16px",
+                  marginBottom: "16px",
+                  boxShadow: "4px 4px 0 #0A0A0A",
                 }}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                    }}
-                  >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     {depositData.status === "success" ? (
-                      <CheckCircle size={32} style={{ color: "#FFFFFF" }} />
+                      <CheckCircle size={28} style={{ color: "#FFFFFF" }} />
                     ) : depositData.status === "cancel" ? (
-                      <XCircle size={32} style={{ color: "#FFFFFF" }} />
+                      <XCircle size={28} style={{ color: "#FFFFFF" }} />
                     ) : (
-                      <Clock size={32} style={{ color: "#0A0A0A" }} />
+                      <Clock size={28} style={{ color: "#0A0A0A" }} />
                     )}
                     <div>
-                      <div
-                        style={{
-                          fontSize: "10px",
-                          letterSpacing: "2px",
-                          fontWeight: "700",
-                          color:
-                            depositData.status === "pending"
-                              ? "#0A0A0A"
-                              : "#FFFFFF",
-                          opacity: 0.8,
-                        }}
-                      >
+                      <div style={{ fontSize: "9px", letterSpacing: "1px", fontWeight: "700", opacity: 0.7, color: depositData.status === "pending" ? "#0A0A0A" : "#FFFFFF" }}>
                         STATUS
                       </div>
-                      <div
-                        style={{
-                          fontSize: "20px",
-                          fontWeight: "900",
-                          color:
-                            depositData.status === "pending"
-                              ? "#0A0A0A"
-                              : "#FFFFFF",
-                        }}
-                      >
-                        {depositData.status === "success"
-                          ? "BERHASIL"
-                          : depositData.status === "cancel"
-                          ? "DIBATALKAN"
-                          : "MENUNGGU PEMBAYARAN"}
+                      <div style={{ fontSize: "16px", fontWeight: "900", color: depositData.status === "pending" ? "#0A0A0A" : "#FFFFFF" }}>
+                        {depositData.status === "success" ? "BERHASIL" : depositData.status === "cancel" ? "DIBATALKAN" : "MENUNGGU"}
                       </div>
                     </div>
                   </div>
-                  {depositData.status === "pending" && (
+                  {depositData.status === "pending" && timeLeft && (
                     <div style={{ textAlign: "right" }}>
-                      <div
-                        style={{
-                          fontSize: "10px",
-                          letterSpacing: "1px",
-                          fontWeight: "700",
-                        }}
-                      >
-                        SISA WAKTU
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "24px",
-                          fontWeight: "900",
-                          fontFamily: "monospace",
-                        }}
-                      >
-                        {timeLeft}
-                      </div>
+                      <div style={{ fontSize: "9px", letterSpacing: "1px", fontWeight: "700" }}>SISA WAKTU</div>
+                      <div style={{ fontSize: "20px", fontWeight: "900", fontFamily: "monospace" }}>{timeLeft}</div>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Payment Details */}
-              <div
-                style={{
-                  background: "#FFFFFF",
-                  border: "4px solid #0A0A0A",
-                  padding: "24px",
-                  marginBottom: "24px",
-                  boxShadow: "6px 6px 0 #0A0A0A",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "10px",
-                    letterSpacing: "2px",
-                    fontWeight: "900",
-                    marginBottom: "16px",
-                  }}
-                >
-                  DETAIL PEMBAYARAN
-                </div>
-
-                <div style={{ display: "grid", gap: "12px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      padding: "12px",
-                      background: "#FFFEF0",
-                      border: "2px solid #E8E8D0",
-                    }}
-                  >
-                    <span style={{ fontSize: "12px", color: "#666" }}>
-                      ID Deposit
-                    </span>
-                    <span style={{ fontWeight: "700", fontSize: "12px" }}>
-                      {depositData.id}
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      padding: "12px",
-                      background: "#FFFEF0",
-                      border: "2px solid #E8E8D0",
-                    }}
-                  >
-                    <span style={{ fontSize: "12px", color: "#666" }}>
-                      Total Bayar
-                    </span>
-                    <span
-                      style={{
-                        fontWeight: "900",
-                        fontSize: "16px",
-                        color: "#10B981",
-                      }}
-                    >
-                      {formatRupiah(depositData.total)}
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      padding: "12px",
-                      background: "#FFFEF0",
-                      border: "2px solid #E8E8D0",
-                    }}
-                  >
-                    <span style={{ fontSize: "12px", color: "#666" }}>
-                      Biaya Admin
-                    </span>
-                    <span style={{ fontWeight: "700", fontSize: "12px" }}>
-                      {formatRupiah(depositData.fee)}
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      padding: "12px",
-                      background: "#FFFEF0",
-                      border: "2px solid #E8E8D0",
-                    }}
-                  >
-                    <span style={{ fontSize: "12px", color: "#666" }}>
-                      Saldo Diterima
-                    </span>
-                    <span style={{ fontWeight: "700", fontSize: "12px" }}>
-                      {formatRupiah(depositData.diterima)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* QR Code */}
+              {/* QR Code Display */}
               {depositData.status === "pending" && depositData.qr_image && (
                 <div
                   style={{
                     background: "#FFFFFF",
-                    border: "4px solid #0A0A0A",
-                    padding: "24px",
-                    marginBottom: "24px",
-                    boxShadow: "6px 6px 0 #0A0A0A",
+                    border: "3px solid #0A0A0A",
+                    padding: "20px",
+                    marginBottom: "16px",
+                    boxShadow: "4px 4px 0 #0A0A0A",
                     textAlign: "center",
                   }}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "8px",
-                      marginBottom: "16px",
-                    }}
-                  >
-                    <QrCode size={16} />
-                    <span
-                      style={{
-                        fontSize: "10px",
-                        letterSpacing: "2px",
-                        fontWeight: "900",
-                      }}
-                    >
-                      SCAN QR CODE
-                    </span>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", marginBottom: "12px" }}>
+                    <QrCode size={14} />
+                    <span style={{ fontSize: "10px", letterSpacing: "2px", fontWeight: "900" }}>SCAN QR CODE</span>
                   </div>
-                  <img
-                    src={depositData.qr_image}
-                    alt="QR Code"
-                    style={{
-                      width: "200px",
-                      height: "200px",
-                      margin: "0 auto",
-                      border: "4px solid #0A0A0A",
-                    }}
-                  />
+                  
+                  {/* QR Image from API */}
+                  <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
+                    <img
+                      src={depositData.qr_image}
+                      alt="QR Code Pembayaran"
+                      style={{
+                        width: "200px",
+                        height: "200px",
+                        border: "4px solid #0A0A0A",
+                        background: "#FFFFFF",
+                      }}
+                    />
+                  </div>
+
+                  {/* Copy Address */}
                   {depositData.qr_string && (
-                    <div style={{ marginTop: "16px" }}>
-                      <div
-                        style={{
-                          fontSize: "10px",
-                          color: "#666",
-                          marginBottom: "8px",
-                        }}
-                      >
-                        Atau salin alamat:
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          justifyContent: "center",
-                        }}
-                      >
+                    <div>
+                      <div style={{ fontSize: "10px", color: "#666", marginBottom: "6px" }}>Atau salin alamat:</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "center" }}>
                         <code
                           style={{
                             background: "#FFFEF0",
-                            padding: "8px 12px",
+                            padding: "8px 10px",
                             border: "2px solid #0A0A0A",
-                            fontSize: "11px",
+                            fontSize: "10px",
                             wordBreak: "break-all",
-                            maxWidth: "200px",
+                            maxWidth: "180px",
+                            display: "block",
                           }}
                         >
                           {depositData.qr_string}
@@ -735,13 +476,10 @@ function DepositContent() {
                             border: "2px solid #0A0A0A",
                             background: copied ? "#10B981" : "#FFD600",
                             cursor: "pointer",
+                            flexShrink: 0,
                           }}
                         >
-                          {copied ? (
-                            <Check size={16} />
-                          ) : (
-                            <Copy size={16} />
-                          )}
+                          {copied ? <Check size={14} style={{ color: "#FFF" }} /> : <Copy size={14} />}
                         </button>
                       </div>
                     </div>
@@ -749,24 +487,58 @@ function DepositContent() {
                 </div>
               )}
 
+              {/* Payment Details */}
+              <div
+                style={{
+                  background: "#FFFFFF",
+                  border: "3px solid #0A0A0A",
+                  padding: "16px",
+                  marginBottom: "16px",
+                  boxShadow: "4px 4px 0 #0A0A0A",
+                }}
+              >
+                <div style={{ fontSize: "10px", letterSpacing: "2px", fontWeight: "900", marginBottom: "12px" }}>
+                  DETAIL PEMBAYARAN
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "10px", background: "#FFFEF0", border: "2px solid #E8E8D0" }}>
+                    <span style={{ fontSize: "11px", color: "#666" }}>ID Deposit</span>
+                    <span style={{ fontWeight: "700", fontSize: "11px" }}>{depositData.id}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "10px", background: "#FFFEF0", border: "2px solid #E8E8D0" }}>
+                    <span style={{ fontSize: "11px", color: "#666" }}>Total Bayar</span>
+                    <span style={{ fontWeight: "900", fontSize: "14px", color: "#10B981" }}>{formatRupiah(depositData.total)}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "10px", background: "#FFFEF0", border: "2px solid #E8E8D0" }}>
+                    <span style={{ fontSize: "11px", color: "#666" }}>Biaya Admin</span>
+                    <span style={{ fontWeight: "700", fontSize: "11px" }}>{formatRupiah(depositData.fee)}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "10px", background: "#FFFEF0", border: "2px solid #E8E8D0" }}>
+                    <span style={{ fontSize: "11px", color: "#666" }}>Saldo Diterima</span>
+                    <span style={{ fontWeight: "700", fontSize: "11px" }}>{formatRupiah(depositData.diterima)}</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Action Buttons */}
-              <div style={{ display: "grid", gap: "12px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 {depositData.status === "pending" && (
                   <button
                     onClick={checkStatus}
                     disabled={checkingStatus}
                     style={{
                       width: "100%",
-                      padding: "16px",
+                      padding: "14px",
                       background: "#0A0A0A",
-                      border: "4px solid #0A0A0A",
+                      border: "3px solid #0A0A0A",
                       color: "#FFFFFF",
                       fontWeight: "900",
-                      fontSize: "14px",
+                      fontSize: "12px",
                       cursor: "pointer",
                       fontFamily: "'Space Mono', monospace",
                       letterSpacing: "1px",
-                      boxShadow: "4px 4px 0 #666",
+                      boxShadow: "3px 3px 0 #666",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -775,13 +547,13 @@ function DepositContent() {
                   >
                     {checkingStatus ? (
                       <>
-                        <Loader2 size={16} className="animate-spin" />
+                        <Loader2 size={14} className="animate-spin" />
                         MENGECEK...
                       </>
                     ) : (
                       <>
-                        <RefreshCw size={16} />
-                        CEK STATUS PEMBAYARAN
+                        <RefreshCw size={14} />
+                        CEK STATUS
                       </>
                     )}
                   </button>
@@ -791,21 +563,19 @@ function DepositContent() {
                   onClick={resetDeposit}
                   style={{
                     width: "100%",
-                    padding: "16px",
+                    padding: "14px",
                     background: "#FFFFFF",
-                    border: "4px solid #0A0A0A",
+                    border: "3px solid #0A0A0A",
                     color: "#0A0A0A",
                     fontWeight: "900",
-                    fontSize: "14px",
+                    fontSize: "12px",
                     cursor: "pointer",
                     fontFamily: "'Space Mono', monospace",
                     letterSpacing: "1px",
-                    boxShadow: "4px 4px 0 #0A0A0A",
+                    boxShadow: "3px 3px 0 #0A0A0A",
                   }}
                 >
-                  {depositData.status === "success"
-                    ? "DEPOSIT LAGI"
-                    : "BUAT DEPOSIT BARU"}
+                  {depositData.status === "success" ? "DEPOSIT LAGI" : "BUAT DEPOSIT BARU"}
                 </button>
               </div>
             </div>
@@ -820,19 +590,8 @@ function LoadingFallback() {
   return (
     <div className="min-h-screen w-full" style={{ background: "#FFFEF0" }}>
       <Navbar />
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "calc(100vh - 80px)",
-        }}
-      >
-        <Loader2
-          size={48}
-          className="animate-spin"
-          style={{ color: "#0A0A0A" }}
-        />
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "calc(100vh - 80px)" }}>
+        <Loader2 size={40} className="animate-spin" style={{ color: "#0A0A0A" }} />
       </div>
     </div>
   );
