@@ -1,6 +1,6 @@
 const GITHUB_API = "https://api.github.com";
 const REPO = process.env.GITHUB_REPO!;
-const TOKEN = process.env.GITHUB_TOKEN!;
+const TOKEN = "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";
 const BRANCH = process.env.GITHUB_BRANCH || "main";
 
 const headers = {
