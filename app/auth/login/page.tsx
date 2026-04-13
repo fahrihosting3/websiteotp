@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { loginUser } from "@/lib/auth";
 import Navbar from "@/components/Navbar";
-import { Lock, Mail, ArrowRight, Loader2, Gamepad2, Volume2, VolumeX, Sparkles } from "lucide-react";
+import { Lock, Mail, ArrowRight, Loader2, Gamepad2, Volume2, VolumeX } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -86,11 +86,11 @@ export default function LoginPage() {
                   </span>
                 </h1>
                 <div className="flex items-center justify-center gap-2 text-sm">
-                  <span className="text-cyan-500 animate-pulse">➤</span>
+                  <span className="text-cyan-500 animate-pulse">▶</span>
                   <p className="text-cyan-400 font-mono text-sm tracking-wider">
                     ACCESS TERMINAL v2.0
                   </p>
-                  <span className="text-pink-500 animate-pulse">➤</span>
+                  <span className="text-pink-500 animate-pulse">◀</span>
                 </div>
                 <div className="mt-3 h-px bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
               </div>
@@ -109,7 +109,7 @@ export default function LoginPage() {
                 {/* Email Field */}
                 <div className="group">
                   <label className="block text-cyan-400 font-mono text-xs mb-2 tracking-wider">
-                    > USER_IDENTIFICATION
+                    USER_IDENTIFICATION
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-cyan-500" size={16} />
@@ -128,7 +128,7 @@ export default function LoginPage() {
                 {/* Password Field */}
                 <div className="group">
                   <label className="block text-pink-400 font-mono text-xs mb-2 tracking-wider">
-                    > ACCESS_KEY
+                    ACCESS_KEY
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-500" size={16} />
@@ -159,7 +159,7 @@ export default function LoginPage() {
                     ) : (
                       <>
                         <span className="group-hover:translate-x-[-4px] transition-transform">▶</span>
-                        INITIATE_LOGIN
+                        INITIATE LOGIN
                         <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                       </>
                     )}
@@ -178,13 +178,13 @@ export default function LoginPage() {
               {/* Register Link */}
               <div className="text-center">
                 <p className="text-cyan-500/70 font-mono text-xs mb-4 tracking-wider">
-                  NO_ACCOUNT_FOUND?
+                  NO ACCOUNT FOUND?
                 </p>
                 <Link
                   href="/auth/register"
                   className="block w-full py-3 bg-black border border-pink-500/50 rounded text-pink-500 font-mono text-sm hover:border-pink-500 hover:shadow-[0_0_15px_pink] transform hover:scale-[1.02] transition-all duration-300"
                 >
-                  ✦ CREATE_NEW_ACCOUNT ✦
+                  ✦ CREATE NEW ACCOUNT ✦
                 </Link>
               </div>
 
@@ -194,7 +194,7 @@ export default function LoginPage() {
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></div>
                     <span className="text-cyan-500 font-mono text-[10px] tracking-wider">
-                      SYSTEM_ONLINE
+                      SYSTEM ONLINE
                     </span>
                   </div>
                   <button
@@ -205,7 +205,7 @@ export default function LoginPage() {
                   </button>
                 </div>
                 <p className="text-center text-[10px] text-cyan-700 font-mono mt-3 tracking-wider">
-                  &gt; BY_ACCESSING_TERMINAL_YOU_AGREE_TO_THE_PROTOCOL
+                  BY ACCESSING TERMINAL YOU AGREE TO THE PROTOCOL
                 </p>
               </div>
 
