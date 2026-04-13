@@ -280,44 +280,41 @@ function OrderDetailContent() {
                 </div>
 
                 {/* Stock & Price */}
-                <div className="flex gap-6">
-                  <div>
-                    <p style={{ fontSize: "10px", color: "#666", letterSpacing: "1px", marginBottom: "2px" }}>
-                      STOK
-                    </p>
-                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <div
-                        style={{
-                          width: "8px",
-                          height: "8px",
-                          background: Number(stock) > 0 ? "#00C851" : "#FF4444",
-                          border: "2px solid #0A0A0A",
-                        }}
-                      />
-                      <span style={{ fontWeight: "900", fontSize: "14px" }}>{stock}</span>
-                    </div>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: "10px", color: "#666", letterSpacing: "1px", marginBottom: "2px" }}>
-                      HARGA
-                    </p>
-                    <span
-                      style={{
-                        fontWeight: "900",
-                        fontSize: "16px",
-                        color: "#0A0A0A",
-                        background: "#FFD600",
-                        padding: "2px 8px",
-                        border: "2px solid #0A0A0A",
-                      }}
-                    >
-                      {priceFormat}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+<div className="flex gap-6">
+  <div>
+    <p style={{ fontSize: "10px", color: "#666", letterSpacing: "1px", marginBottom: "2px" }}>
+      STOK
+    </p>
+    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+      <div
+        style={{
+          width: "8px",
+          height: "8px",
+          background: Number(stock) > 0 ? "#00C851" : "#FF4444",
+          border: "2px solid #0A0A0A",
+        }}
+      />
+      <span style={{ fontWeight: "900", fontSize: "14px", color: "#FFFFFF" }}>{stock}</span>
+    </div>
+  </div>
+  <div>
+    <p style={{ fontSize: "10px", color: "#666", letterSpacing: "1px", marginBottom: "2px" }}>
+      HARGA
+    </p>
+    <span
+      style={{
+        fontWeight: "900",
+        fontSize: "16px",
+        color: "#0A0A0A",
+        background: "#FFD600",
+        padding: "2px 8px",
+        border: "2px solid #0A0A0A",
+      }}
+    >
+      {priceFormat}
+    </span>
+  </div>
+</div>
 
           {/* Operators Section */}
           <div
