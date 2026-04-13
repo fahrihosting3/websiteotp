@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { getCurrentUser, updateUserBalance } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import {
@@ -114,25 +114,19 @@ export default function DepositPage() {
 
     setStatus("loading");
 
-    const apiKey = process.env.NEXT_PUBLIC_RUMAHOTP_API_KEY || "";
-    console.log("[v0] Creating deposit with amount:", numAmount);
-    console.log("[v0] API Key exists:", !!apiKey);
-
     try {
       const res = await fetch(
         `https://www.rumahotp.io/api/v2/deposit/create?amount=${numAmount}&payment_id=qris`,
         {
           method: "GET",
           headers: {
-            "x-apikey": apiKey,
+            "x-apikey": process.env.NEXT_PUBLIC_RUMAHOTP_API_KEY || "",
             Accept: "application/json",
           },
         }
       );
 
-      console.log("[v0] Response status:", res.status);
       const data = await res.json();
-      console.log("[v0] Response data:", data);
 
       if (data.success) {
         setDepositData(data.data);
@@ -143,7 +137,7 @@ export default function DepositPage() {
         setStatus("error");
       }
     } catch (err) {
-      console.error("[v0] Error creating deposit:", err);
+      console.error("Error creating deposit:", err);
       toast.error("Terjadi kesalahan. Silakan coba lagi.");
       setStatus("error");
     }
@@ -171,15 +165,7 @@ export default function DepositPage() {
       if (data.success) {
         if (data.data.status === "success") {
           setStatus("success");
-          // Add balance to user account
-          const amountToAdd = depositData.diterima || 0;
-          try {
-            await updateUserBalance(amountToAdd);
-            toast.success(`Pembayaran berhasil! Saldo +Rp${amountToAdd.toLocaleString("id-ID")}`);
-          } catch (err) {
-            console.error("Error updating balance:", err);
-            toast.success("Pembayaran berhasil!");
-          }
+          toast.success("Pembayaran berhasil!");
         } else if (data.data.status === "cancel") {
           setStatus("cancel");
           toast.error("Pembayaran dibatalkan");
