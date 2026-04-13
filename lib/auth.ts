@@ -14,10 +14,22 @@ export async function registerUser(email: string, password: string, name: string
     body: JSON.stringify({ name, email, password }),
   });
 
-  const data = await res.json();
+  // Handle empty response
+  const text = await res.text();
+  if (!text) {
+    throw new Error("Server tidak merespons. Pastikan environment variables sudah diset dengan benar.");
+  }
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error("Response dari server tidak valid: " + text.substring(0, 100));
+  }
+
   if (!res.ok) throw new Error(data.error || "Registrasi gagal");
   return data;
-};
+}
 
 export const loginUser = (email: string, password: string): Promise<User> => {
   return new Promise((resolve, reject) => {
