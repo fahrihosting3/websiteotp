@@ -24,9 +24,11 @@ export default function ServicesPage() {
   }
 
   return (
-    <>
+    <div className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FFFEF0" }}>
       <Navbar />
-      <BuyNumber />
-    </>
+      <div className="w-full">
+        <BuyNumber />
+      </div>
+    </div>
   );
 }

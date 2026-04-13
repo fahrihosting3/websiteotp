@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { getCurrentUser, logoutUser } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { User, LogOut, Wallet, Terminal, RefreshCw } from "lucide-react";
+import { User, LogOut, Wallet, Terminal, RefreshCw, ShoppingCart, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -135,6 +136,39 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+
+          {/* Pilih Layanan Button */}
+          <Link 
+            href="/services"
+            className="block"
+          >
+            <div 
+              className="border-4 border-gray-900 bg-amber-400 p-6 shadow-[6px_6px_0px_#0A0A0A] hover:shadow-[8px_8px_0px_#0A0A0A] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-150 cursor-pointer"
+              style={{ fontFamily: "'Space Mono', 'Courier New', monospace" }}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gray-900 border-3 border-gray-900 flex items-center justify-center shadow-[3px_3px_0px_rgba(0,0,0,0.3)]">
+                    <ShoppingCart size={24} className="text-amber-400" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Terminal size={10} className="text-gray-900" />
+                      <span className="text-[10px] font-bold tracking-[3px] text-gray-900">RUMAHOTP.IO</span>
+                    </div>
+                    <h3 className="text-xl font-black tracking-tight text-gray-900">PILIH LAYANAN</h3>
+                    <p className="text-xs text-gray-700 tracking-wide mt-1">Beli nomor virtual untuk verifikasi OTP</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold tracking-[2px] text-gray-900 hidden sm:block">MULAI BELI</span>
+                  <div className="w-12 h-12 bg-gray-900 flex items-center justify-center">
+                    <ArrowRight size={20} className="text-amber-400" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Link>
 
         </div>
       </div>
