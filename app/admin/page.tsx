@@ -6,18 +6,16 @@ import { getCurrentUser, logoutUser, isAdmin } from "@/lib/auth";
 import { getAllUsers, getAllTransactions, getPendingTransactions, type UserData, type TransactionData } from "@/lib/externalDB";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import AdminSidebar from "@/components/AdminSidebar";
 import {
   Users,
   Receipt,
   Clock,
   CheckCircle2,
   XCircle,
-  TrendingUp,
   Wallet,
   Terminal,
   RefreshCw,
-  LogOut,
-  BarChart3,
   AlertCircle,
 } from "lucide-react";
 
@@ -65,9 +63,6 @@ export default function AdminDashboard() {
         getAllTransactions(),
         getPendingTransactions(),
       ]);
-
-      console.log("[v0] Users API response:", usersRes);
-      console.log("[v0] Transactions API response:", trxRes);
 
       if (usersRes.success && usersRes.data) {
         setUsers(usersRes.data);
@@ -158,24 +153,35 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <>
-        <Navbar />
-        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-slate-100">
-          <div className="flex items-center gap-3">
-            <RefreshCw className="animate-spin text-slate-600" size={24} />
-            <span className="text-slate-600 font-medium">Memuat data admin...</span>
-          </div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+        <div className="flex items-center gap-3">
+          <RefreshCw className="animate-spin text-slate-600" size={24} />
+          <span className="text-slate-600 font-medium">Memuat data admin...</span>
         </div>
-      </>
+      </div>
     );
   }
 
   return (
-    <>
-      <Navbar />
-      <div className="min-h-[calc(100vh-80px)] relative overflow-hidden bg-slate-100">
+    <div className="min-h-screen bg-slate-100">
+      {/* Admin Sidebar */}
+      <AdminSidebar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onRefresh={fetchData}
+        onLogout={handleLogout}
+        refreshing={refreshing}
+        stats={{
+          totalUsers: stats.totalUsers,
+          totalTransactions: stats.totalTransactions,
+          pendingTransactions: stats.pendingTransactions,
+        }}
+      />
+
+      {/* Main Content - with sidebar offset on desktop */}
+      <div className="lg:pl-64 min-h-screen transition-all duration-300">
         {/* Background Pattern */}
-        <div className="absolute inset-0">
+        <div className="fixed inset-0 lg:pl-64 pointer-events-none">
           <div
             className="absolute inset-0"
             style={{
@@ -186,18 +192,21 @@ export default function AdminDashboard() {
           ></div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 lg:pb-8">
           {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
-            <div className="space-y-2">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <Terminal size={14} className="text-slate-400" />
                 <span className="text-[10px] font-mono text-slate-400 tracking-wider">ADMIN PANEL</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-1 h-6 bg-rose-500 rounded-full"></div>
-                <h1 className="text-3xl sm:text-4xl font-black text-slate-800 tracking-tight">
-                  Admin Dashboard
+                <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">
+                  {activeTab === "overview" && "Overview"}
+                  {activeTab === "users" && "Data Users"}
+                  {activeTab === "transactions" && "Semua Transaksi"}
+                  {activeTab === "pending" && "Transaksi Pending"}
                 </h1>
               </div>
               <p className="text-slate-500 text-sm ml-3">
@@ -205,23 +214,15 @@ export default function AdminDashboard() {
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                onClick={fetchData}
-                disabled={refreshing}
-                className="flex items-center gap-2 px-4 py-2 text-slate-600 bg-white border-3 border-slate-800 shadow-[3px_3px_0px_#1e293b] hover:shadow-[4px_4px_0px_#1e293b] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all text-sm font-bold"
-              >
-                <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
-                REFRESH
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 text-white bg-slate-800 border-3 border-slate-800 shadow-[3px_3px_0px_#475569] hover:shadow-[4px_4px_0px_#475569] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all text-sm font-bold"
-              >
-                <LogOut size={14} />
-                KELUAR
-              </button>
-            </div>
+            {/* Mobile refresh button */}
+            <button
+              onClick={fetchData}
+              disabled={refreshing}
+              className="lg:hidden flex items-center gap-2 px-4 py-2 text-slate-600 bg-white border-3 border-slate-800 shadow-[3px_3px_0px_#1e293b] hover:shadow-[4px_4px_0px_#1e293b] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all text-sm font-bold"
+            >
+              <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+              REFRESH
+            </button>
           </div>
 
           {/* Stats Grid */}
@@ -287,29 +288,6 @@ export default function AdminDashboard() {
                 <XCircle size={32} className="text-rose-600" />
               </div>
             </div>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-            {[
-              { id: "overview", label: "OVERVIEW", icon: BarChart3 },
-              { id: "users", label: "USERS", icon: Users },
-              { id: "transactions", label: "SEMUA TRX", icon: Receipt },
-              { id: "pending", label: "PENDING", icon: Clock },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 px-4 py-3 font-bold text-sm border-3 border-slate-800 transition-all whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? "bg-slate-800 text-white shadow-[4px_4px_0px_#475569]"
-                    : "bg-white text-slate-800 shadow-[3px_3px_0px_#1e293b] hover:shadow-[4px_4px_0px_#1e293b] hover:translate-x-[-1px] hover:translate-y-[-1px]"
-                }`}
-              >
-                <tab.icon size={16} />
-                {tab.label}
-              </button>
-            ))}
           </div>
 
           {/* Tab Content */}
@@ -500,6 +478,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
