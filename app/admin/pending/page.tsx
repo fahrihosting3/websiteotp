@@ -151,9 +151,9 @@ export default function AdminPendingPage() {
                     <div className="bg-[rgb(var(--card))] rounded-lg p-3 border border-[rgb(var(--border))]">
                       <div className="flex items-center gap-2 mb-1">
                         <Clock size={14} className="text-[rgb(var(--muted-foreground))]" />
-                        <p className="text-[rgb(var(--muted-foreground))] text-xs font-medium">Metode</p>
+                        <p className="text-[rgb(var(--muted-foreground))] text-xs font-medium">Tipe</p>
                       </div>
-                      <p className="font-bold text-[rgb(var(--foreground))]">{trx.paymentMethod || "QRIS"}</p>
+                      <p className="font-bold text-[rgb(var(--foreground))] uppercase">{trx.type}</p>
                     </div>
                   </div>
                 </div>
