@@ -1,8 +1,8 @@
 // lib/externalDB.ts
 // External API Database Integration + Local Storage Fallback
-// API: https://orderkuota-saua.vercel.app
+// API: https://api-orkut-olive.vercel.app
 
-const API_BASE = "https://orderkuota-saua.vercel.app/api";
+const API_BASE = "https://api-orkut-olive.vercel.app/api";
 
 // Local storage keys
 const USERS_KEY = "panel_users";
@@ -169,9 +169,19 @@ export async function updateUserBalance(
 }
 
 export async function getAllUsers(): Promise<ApiResponse<UserData[]>> {
-  // Return from local storage (since external API may not have this endpoint yet)
-  const users = getLocalUsers();
-  return { success: true, data: users };
+  try {
+    const res = await fetch(`${API_BASE}/users/all`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Get all users API error:", error);
+    // Fallback to local storage
+    const users = getLocalUsers();
+    return { success: true, data: users };
+  }
 }
 
 // ============ TRANSACTION FUNCTIONS ============

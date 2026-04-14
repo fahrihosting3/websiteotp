@@ -66,6 +66,9 @@ export default function AdminDashboard() {
         getPendingTransactions(),
       ]);
 
+      console.log("[v0] Users API response:", usersRes);
+      console.log("[v0] Transactions API response:", trxRes);
+
       if (usersRes.success && usersRes.data) {
         setUsers(usersRes.data);
       }
