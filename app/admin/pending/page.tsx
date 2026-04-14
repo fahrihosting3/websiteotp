@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getPendingTransactions, type TransactionData } from "@/lib/externalDB";
-import { Clock, Terminal, RefreshCw, CheckCircle2 } from "lucide-react";
+import { Clock, Terminal, RefreshCw, CheckCircle2, Wallet, Calendar, User } from "lucide-react";
 
 export default function AdminPendingPage() {
   const [pendingTrx, setPendingTrx] = useState<TransactionData[]>([]);
@@ -49,9 +49,11 @@ export default function AdminPendingPage() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <RefreshCw className="animate-spin text-slate-600" size={24} />
-          <span className="text-slate-600 font-medium">Memuat transaksi pending...</span>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[rgb(var(--warning))] to-[rgb(var(--accent))] flex items-center justify-center animate-pulse">
+            <RefreshCw className="animate-spin text-white" size={24} />
+          </div>
+          <span className="text-[rgb(var(--muted-foreground))] font-medium">Memuat transaksi pending...</span>
         </div>
       </div>
     );
@@ -60,78 +62,110 @@ export default function AdminPendingPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 animate-fade-in">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Terminal size={14} className="text-slate-400" />
-            <span className="text-[10px] font-mono text-slate-400 tracking-wider">ADMIN PANEL</span>
+            <Terminal size={14} className="text-[rgb(var(--muted-foreground))]" />
+            <span className="text-[10px] font-mono text-[rgb(var(--muted-foreground))] tracking-wider">ADMIN PANEL</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-1 h-6 bg-amber-500 rounded-full"></div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-8 bg-gradient-to-b from-[rgb(var(--warning))] to-[rgb(var(--accent))] rounded-full"></div>
+            <h1 className="text-3xl sm:text-4xl font-black text-[rgb(var(--foreground))] tracking-tight">
               Transaksi Pending
             </h1>
           </div>
-          <p className="text-slate-500 text-sm ml-3">
-            <span className="font-semibold text-slate-700">{pendingTrx.length}</span> transaksi menunggu pembayaran
+          <p className="text-[rgb(var(--muted-foreground))] text-sm ml-4">
+            <span className="font-semibold text-[rgb(var(--foreground))]">{pendingTrx.length}</span> transaksi menunggu pembayaran
           </p>
         </div>
 
         <button
           onClick={fetchData}
           disabled={refreshing}
-          className="flex items-center gap-2 px-4 py-2 text-slate-600 bg-white border-3 border-slate-800 shadow-[3px_3px_0px_#1e293b] hover:shadow-[4px_4px_0px_#1e293b] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all text-sm font-bold"
+          className="btn-neo flex items-center gap-2 px-4 py-2.5 text-[rgb(var(--foreground))] text-sm disabled:opacity-50"
         >
-          <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+          <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
           REFRESH
         </button>
       </div>
 
       {/* Pending Transactions */}
-      <div className="bg-white border-4 border-slate-800 shadow-[8px_8px_0px_#1e293b]">
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-amber-200 border-2 border-slate-800 flex items-center justify-center">
-              <Clock size={18} className="text-slate-800" />
+      <div className="card-neo overflow-hidden animate-fade-in" style={{ animationDelay: "0.1s" }}>
+        <div className="p-6 border-b border-[rgb(var(--border))]">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-[rgb(var(--warning)/0.15)] border-2 border-[rgb(var(--warning))] rounded-xl flex items-center justify-center animate-pulse-glow">
+              <Clock size={20} className="text-[rgb(var(--warning))]" />
             </div>
-            <h2 className="text-xl font-black text-slate-800">Transaksi Pending ({pendingTrx.length})</h2>
+            <div>
+              <h2 className="text-xl font-black text-[rgb(var(--foreground))]">Transaksi Pending</h2>
+              <p className="text-sm text-[rgb(var(--muted-foreground))]">Menunggu konfirmasi pembayaran</p>
+            </div>
           </div>
+        </div>
 
+        <div className="p-6">
           {pendingTrx.length > 0 ? (
-            <div className="space-y-3">
+            <div className="grid gap-4 stagger-children">
               {pendingTrx.map((trx) => (
-                <div key={trx.id} className="bg-amber-50 border-3 border-slate-800 p-4 shadow-[4px_4px_0px_#1e293b]">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <p className="font-bold text-slate-800">{trx.userEmail}</p>
-                      <p className="text-xs font-mono text-slate-500">{trx.depositId}</p>
+                <div 
+                  key={trx.id} 
+                  className="bg-[rgb(var(--warning)/0.08)] border-3 border-[rgb(var(--warning)/0.5)] rounded-xl p-5 hover:border-[rgb(var(--warning))] transition-all duration-300 hover:shadow-lg"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[rgb(var(--warning)/0.2)] flex items-center justify-center">
+                        <User size={18} className="text-[rgb(var(--warning))]" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-[rgb(var(--foreground))]">{trx.userEmail}</p>
+                        <p className="text-xs font-mono text-[rgb(var(--muted-foreground))]">{trx.depositId}</p>
+                      </div>
                     </div>
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 border-2 border-slate-800 text-xs font-bold text-slate-800">
-                      <Clock size={12} /> PENDING
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[rgb(var(--warning)/0.2)] border-2 border-[rgb(var(--warning))] text-[rgb(var(--warning))] text-xs font-bold rounded-full">
+                      <Clock size={14} className="animate-pulse" /> MENUNGGU PEMBAYARAN
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <p className="text-slate-500 text-xs">Nominal</p>
-                      <p className="font-bold text-slate-800">{formatCurrency(trx.amount)}</p>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="bg-[rgb(var(--card))] rounded-lg p-3 border border-[rgb(var(--border))]">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Wallet size={14} className="text-[rgb(var(--muted-foreground))]" />
+                        <p className="text-[rgb(var(--muted-foreground))] text-xs font-medium">Nominal</p>
+                      </div>
+                      <p className="font-bold text-[rgb(var(--foreground))]">{formatCurrency(trx.amount)}</p>
                     </div>
-                    <div>
-                      <p className="text-slate-500 text-xs">Total</p>
-                      <p className="font-bold text-slate-800">{formatCurrency(trx.total)}</p>
+                    <div className="bg-[rgb(var(--card))] rounded-lg p-3 border border-[rgb(var(--border))]">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Wallet size={14} className="text-[rgb(var(--muted-foreground))]" />
+                        <p className="text-[rgb(var(--muted-foreground))] text-xs font-medium">Total Bayar</p>
+                      </div>
+                      <p className="font-bold text-[rgb(var(--foreground))]">{formatCurrency(trx.total)}</p>
                     </div>
-                    <div>
-                      <p className="text-slate-500 text-xs">Dibuat</p>
-                      <p className="font-bold text-slate-800">{formatDate(trx.createdAt)}</p>
+                    <div className="bg-[rgb(var(--card))] rounded-lg p-3 border border-[rgb(var(--border))]">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Calendar size={14} className="text-[rgb(var(--muted-foreground))]" />
+                        <p className="text-[rgb(var(--muted-foreground))] text-xs font-medium">Dibuat</p>
+                      </div>
+                      <p className="font-bold text-[rgb(var(--foreground))] text-sm">{formatDate(trx.createdAt)}</p>
+                    </div>
+                    <div className="bg-[rgb(var(--card))] rounded-lg p-3 border border-[rgb(var(--border))]">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Clock size={14} className="text-[rgb(var(--muted-foreground))]" />
+                        <p className="text-[rgb(var(--muted-foreground))] text-xs font-medium">Metode</p>
+                      </div>
+                      <p className="font-bold text-[rgb(var(--foreground))]">{trx.paymentMethod || "QRIS"}</p>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-slate-500">
-              <CheckCircle2 size={48} className="mx-auto mb-3 text-teal-500" />
-              <p className="font-bold">Tidak ada transaksi pending</p>
-              <p className="text-sm">Semua transaksi sudah diproses</p>
+            <div className="text-center py-16">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-[rgb(var(--success)/0.15)] flex items-center justify-center">
+                <CheckCircle2 size={40} className="text-[rgb(var(--success))]" />
+              </div>
+              <p className="font-bold text-xl text-[rgb(var(--foreground))] mb-2">Tidak ada transaksi pending</p>
+              <p className="text-[rgb(var(--muted-foreground))]">Semua transaksi sudah diproses</p>
             </div>
           )}
         </div>
