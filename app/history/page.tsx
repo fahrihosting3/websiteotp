@@ -285,11 +285,6 @@ export default function HistoryPage() {
                               ID: {trx.depositId}
                             </p>
                           )}
-                          {trx.paymentMethod && (
-                            <p className="text-xs text-slate-500 mt-1">
-                              Metode: {trx.paymentMethod}
-                            </p>
-                          )}
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-2">
