@@ -11,6 +11,14 @@ export type User = {
   createdAt: string;
 };
 
+// Hardcoded admin account - langsung bisa login tanpa register
+const HARDCODED_ADMIN = {
+  email: "admin@panel.com",
+  password: "admin123",
+  username: "Admin Panel",
+  role: "admin" as const,
+};
+
 export async function registerUser(email: string, password: string, name: string, role: "user" | "admin" = "user"): Promise<User> {
   const result = await registerUserAPI(name, email, password, role);
   
@@ -35,6 +43,21 @@ export async function registerUser(email: string, password: string, name: string
 }
 
 export async function loginUser(email: string, password: string): Promise<User> {
+  // Check hardcoded admin first
+  if (email === HARDCODED_ADMIN.email && password === HARDCODED_ADMIN.password) {
+    const adminUser: User = {
+      id: HARDCODED_ADMIN.email,
+      username: HARDCODED_ADMIN.username,
+      email: HARDCODED_ADMIN.email,
+      name: HARDCODED_ADMIN.username,
+      role: HARDCODED_ADMIN.role,
+      balance: 999999999,
+      createdAt: new Date().toISOString(),
+    };
+    localStorage.setItem("currentUser", JSON.stringify(adminUser));
+    return adminUser;
+  }
+
   const result = await loginUserAPI(email, password);
   
   if (!result.success) {
