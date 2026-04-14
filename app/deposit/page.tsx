@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, updateUserBalance } from "@/lib/auth";
+import { createTransaction, updateTransactionStatus, getTransactionByDepositId } from "@/lib/externalDB";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import {
@@ -50,7 +51,14 @@ interface DepositData {
   };
 }
 
+interface PendingDeposit {
+  depositData: DepositData;
+  amount: string;
+  createdAt: number;
+}
+
 const PRESET_AMOUNTS = [10000, 25000, 50000, 100000, 200000, 500000];
+const STORAGE_KEY = "pendingDeposit";
 
 export default function DepositPage() {
   const [user, setUser] = useState<any>(null);
@@ -60,8 +68,10 @@ export default function DepositPage() {
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [showPendingNotif, setShowPendingNotif] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(true);
   const router = useRouter();
 
+  // Restore pending deposit from localStorage on mount
   useEffect(() => {
     const current = getCurrentUser();
     if (!current) {
@@ -69,7 +79,44 @@ export default function DepositPage() {
       return;
     }
     setUser(current);
+
+    // Check for pending deposit in localStorage
+    const savedDeposit = localStorage.getItem(STORAGE_KEY);
+    if (savedDeposit) {
+      try {
+        const pending: PendingDeposit = JSON.parse(savedDeposit);
+        const now = Date.now();
+        const expiredAt = pending.depositData.expired_at_ts;
+        
+        // Check if deposit is still valid (not expired)
+        if (expiredAt > now) {
+          setDepositData(pending.depositData);
+          setAmount(pending.amount);
+          setStatus("pending");
+          setTimeLeft(Math.floor((expiredAt - now) / 1000));
+        } else {
+          // Deposit expired, clear storage
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      } catch (e) {
+        console.error("Failed to restore pending deposit:", e);
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+    setIsRestoring(false);
   }, [router]);
+
+  // Save pending deposit to localStorage whenever depositData changes
+  useEffect(() => {
+    if (status === "pending" && depositData) {
+      const pending: PendingDeposit = {
+        depositData,
+        amount,
+        createdAt: Date.now(),
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(pending));
+    }
+  }, [status, depositData, amount]);
 
   // Countdown timer
   useEffect(() => {
@@ -82,6 +129,9 @@ export default function DepositPage() {
 
       if (remaining <= 0) {
         setStatus("expired");
+        localStorage.removeItem(STORAGE_KEY);
+        // Update transaction status to expired
+        updateTransactionStatus(depositData.id, "expired");
         clearInterval(interval);
       } else {
         setTimeLeft(remaining);
@@ -132,6 +182,23 @@ export default function DepositPage() {
         setDepositData(data.data);
         setStatus("pending");
         toast.success("QRIS berhasil dibuat!");
+
+        // Save transaction to external database
+        if (user) {
+          await createTransaction({
+            userId: user.id,
+            userEmail: user.email,
+            type: "deposit",
+            amount: data.data.diterima,
+            fee: data.data.fee,
+            total: data.data.total,
+            status: "pending",
+            depositId: data.data.id,
+            qrImage: data.data.qr_image,
+            qrString: data.data.qr_string,
+            expiredAt: data.data.expired_at,
+          });
+        }
       } else {
         toast.error(data.message || "Gagal membuat deposit");
         setStatus("error");
@@ -165,10 +232,19 @@ export default function DepositPage() {
       if (data.success) {
         if (data.data.status === "success") {
           setStatus("success");
+          localStorage.removeItem(STORAGE_KEY);
           toast.success("Pembayaran berhasil!");
+          
+          // Update transaction status and user balance
+          await updateTransactionStatus(depositData.id, "success");
+          if (user) {
+            await updateUserBalance(depositData.diterima);
+          }
         } else if (data.data.status === "cancel") {
           setStatus("cancel");
+          localStorage.removeItem(STORAGE_KEY);
           toast.error("Pembayaran dibatalkan");
+          await updateTransactionStatus(depositData.id, "cancel");
         } else if (data.data.status === "pending" && showNotif) {
           // Show pending notification with animation
           setShowPendingNotif(true);
@@ -180,7 +256,7 @@ export default function DepositPage() {
     } finally {
       setCheckingStatus(false);
     }
-  }, [depositData]);
+  }, [depositData, user]);
 
   // Auto-check payment status every 10 seconds
   useEffect(() => {
@@ -203,6 +279,7 @@ export default function DepositPage() {
     setDepositData(null);
     setAmount("");
     setTimeLeft(0);
+    localStorage.removeItem(STORAGE_KEY);
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -214,13 +291,28 @@ export default function DepositPage() {
     }
   };
 
+  // Show loading while restoring state
+  if (isRestoring) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-slate-100">
+          <div className="flex items-center gap-3">
+            <Loader2 className="animate-spin text-slate-600" size={24} />
+            <span className="text-slate-600 font-medium">Memuat...</span>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Navbar />
       <div className="min-h-[calc(100vh-80px)] relative overflow-hidden bg-slate-100">
         {/* Pending Payment Notification */}
         {showPendingNotif && (
-          <div className="fixed top-24 left-1/2 z-50 animate-slideDown">
+          <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-slideDown">
             <div className="bg-amber-50 border-4 border-slate-800 px-6 py-4 shadow-[6px_6px_0px_#1e293b] flex items-center gap-3">
               <div className="w-10 h-10 bg-amber-200 border-2 border-slate-800 flex items-center justify-center">
                 <Loader2 size={20} className="text-slate-800 animate-spin" />
@@ -596,6 +688,22 @@ export default function DepositPage() {
           )}
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+          }
+        }
+        .animate-slideDown {
+          animation: slideDown 0.3s ease-out forwards;
+        }
+      `}</style>
     </>
   );
 }
