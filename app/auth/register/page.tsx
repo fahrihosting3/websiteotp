@@ -23,7 +23,8 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      await registerUser(email, password, name);
+      // Register as regular user by default
+      await registerUser(email, password, name, "user");
       setShowSuccess(true);
       
       setTimeout(() => {
