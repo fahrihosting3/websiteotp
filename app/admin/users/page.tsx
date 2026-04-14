@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getAllUsers, type UserData } from "@/lib/externalDB";
-import { Users, Terminal, RefreshCw, AlertCircle, Search } from "lucide-react";
+import { Users, RefreshCw, AlertCircle, Search } from "lucide-react";
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserData[]>([]);
@@ -68,115 +68,107 @@ export default function AdminUsersPage() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[rgb(var(--primary))] to-[rgb(var(--info))] flex items-center justify-center animate-pulse">
-            <RefreshCw className="animate-spin text-white" size={24} />
+          <div className="w-14 h-14 bg-neutral-800 flex items-center justify-center">
+            <RefreshCw className="animate-spin text-neutral-400" size={20} />
           </div>
-          <span className="text-[rgb(var(--muted-foreground))] font-medium">Memuat data users...</span>
+          <span className="text-neutral-500 text-sm">Memuat data users...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 animate-fade-in">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Terminal size={14} className="text-[rgb(var(--muted-foreground))]" />
-            <span className="text-[10px] font-mono text-[rgb(var(--muted-foreground))] tracking-wider">ADMIN PANEL</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-1.5 h-8 bg-gradient-to-b from-[rgb(var(--info))] to-[rgb(var(--primary))] rounded-full"></div>
-            <h1 className="text-3xl sm:text-4xl font-black text-[rgb(var(--foreground))] tracking-tight">
-              Data Users
-            </h1>
-          </div>
-          <p className="text-[rgb(var(--muted-foreground))] text-sm ml-4">
-            Total <span className="font-semibold text-[rgb(var(--foreground))]">{users.length}</span> user terdaftar
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <p className="text-neutral-500 text-xs font-mono mb-1">ADMIN PANEL</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Data Users</h1>
+          <p className="text-neutral-400 text-sm mt-1">
+            Total <span className="text-white">{users.length}</span> user terdaftar
           </p>
         </div>
 
         <button
           onClick={fetchData}
           disabled={refreshing}
-          className="btn-neo flex items-center gap-2 px-4 py-2.5 text-[rgb(var(--foreground))] text-sm disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-800 text-sm transition-colors disabled:opacity-50"
         >
-          <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
-          REFRESH
+          <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+          Refresh
         </button>
       </div>
 
       {/* Search */}
-      <div className="mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+      <div className="mb-6">
         <div className="relative max-w-md">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgb(var(--muted-foreground))]" />
+          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" />
           <input
             type="text"
             placeholder="Cari username atau email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-[rgb(var(--card))] border-3 border-[rgb(var(--foreground))] text-[rgb(var(--foreground))] placeholder-[rgb(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary))] transition-all duration-200"
+            className="w-full pl-11 pr-4 py-2.5 bg-neutral-900 border border-neutral-800 text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-700 text-sm transition-colors"
           />
         </div>
       </div>
 
       {/* Users Table */}
-      <div className="card-neo overflow-hidden animate-fade-in" style={{ animationDelay: "0.2s" }}>
-        <div className="p-6 border-b border-[rgb(var(--border))]">
+      <div className="bg-neutral-900 border border-neutral-800 overflow-hidden">
+        <div className="p-5 border-b border-neutral-800">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-[rgb(var(--info)/0.15)] border-2 border-[rgb(var(--info))] rounded-xl flex items-center justify-center">
-              <Users size={20} className="text-[rgb(var(--info))]" />
+            <div className="w-10 h-10 bg-neutral-800 flex items-center justify-center">
+              <Users size={18} className="text-neutral-400" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-[rgb(var(--foreground))]">Daftar User</h2>
-              <p className="text-sm text-[rgb(var(--muted-foreground))]">{filteredUsers.length} user ditemukan</p>
+              <h2 className="text-lg font-bold text-white">Daftar User</h2>
+              <p className="text-sm text-neutral-500">{filteredUsers.length} user ditemukan</p>
             </div>
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="table-neo">
+          <table className="w-full">
             <thead>
-              <tr>
-                <th>USERNAME</th>
-                <th>EMAIL</th>
-                <th>ROLE</th>
-                <th>SALDO</th>
-                <th>TERDAFTAR</th>
+              <tr className="border-b border-neutral-800 bg-neutral-800/50">
+                <th className="text-left px-5 py-3 text-xs font-mono text-neutral-400">USERNAME</th>
+                <th className="text-left px-5 py-3 text-xs font-mono text-neutral-400">EMAIL</th>
+                <th className="text-left px-5 py-3 text-xs font-mono text-neutral-400">ROLE</th>
+                <th className="text-left px-5 py-3 text-xs font-mono text-neutral-400">SALDO</th>
+                <th className="text-left px-5 py-3 text-xs font-mono text-neutral-400">TERDAFTAR</th>
               </tr>
             </thead>
-            <tbody className="stagger-children">
+            <tbody>
               {filteredUsers.map((u) => (
-                <tr key={u.email}>
-                  <td>
+                <tr key={u.email} className="border-b border-neutral-800 hover:bg-neutral-800/50 transition-colors">
+                  <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[rgb(var(--primary))] to-[rgb(var(--secondary))] flex items-center justify-center text-white font-bold text-sm shrink-0">
+                      <div className="w-8 h-8 bg-white flex items-center justify-center text-neutral-950 font-bold text-sm shrink-0">
                         {u.username?.charAt(0).toUpperCase()}
                       </div>
-                      <span className="font-bold text-[rgb(var(--foreground))]">{u.username}</span>
+                      <span className="font-medium text-white">{u.username}</span>
                     </div>
                   </td>
-                  <td className="text-[rgb(var(--muted-foreground))]">{u.email}</td>
-                  <td>
-                    <span className={`inline-flex items-center px-2.5 py-1 text-xs font-bold rounded border-2 ${
+                  <td className="px-5 py-4 text-neutral-400 text-sm">{u.email}</td>
+                  <td className="px-5 py-4">
+                    <span className={`px-2 py-0.5 text-xs font-medium ${
                       u.role === "admin"
-                        ? "bg-[rgb(var(--destructive)/0.15)] border-[rgb(var(--destructive))] text-[rgb(var(--destructive))]"
-                        : "bg-[rgb(var(--info)/0.15)] border-[rgb(var(--info))] text-[rgb(var(--info))]"
+                        ? "bg-red-950 border border-red-800 text-red-400"
+                        : "bg-neutral-800 border border-neutral-700 text-neutral-400"
                     }`}>
                       {u.role?.toUpperCase() || "USER"}
                     </span>
                   </td>
-                  <td className="font-bold text-[rgb(var(--foreground))]">{formatCurrency(u.balance || 0)}</td>
-                  <td className="text-[rgb(var(--muted-foreground))] text-sm">{formatDate(u.createdAt)}</td>
+                  <td className="px-5 py-4 font-medium text-white">{formatCurrency(u.balance || 0)}</td>
+                  <td className="px-5 py-4 text-neutral-500 text-sm">{formatDate(u.createdAt)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           {filteredUsers.length === 0 && (
-            <div className="text-center py-16 text-[rgb(var(--muted-foreground))]">
-              <AlertCircle size={48} className="mx-auto mb-3 opacity-50" />
-              <p className="font-bold">Tidak ada user ditemukan</p>
+            <div className="text-center py-16 text-neutral-500">
+              <AlertCircle size={32} className="mx-auto mb-3 opacity-50" />
+              <p className="font-medium">Tidak ada user ditemukan</p>
               <p className="text-sm">Coba ubah kata kunci pencarian</p>
             </div>
           )}
