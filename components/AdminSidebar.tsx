@@ -64,26 +64,26 @@ export default function AdminSidebar({ onRefresh, refreshing = false }: AdminSid
   };
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-neutral-950">
+    <div className="flex flex-col h-full bg-black border-r-4 border-white">
       {/* Logo */}
-      <div className={`p-5 border-b border-neutral-800 ${collapsed ? "px-4" : ""}`}>
+      <div className={`p-5 border-b-4 border-white ${collapsed ? "px-4" : ""}`}>
         <Link href="/admin" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-white flex items-center justify-center shrink-0">
-            <Shield size={20} className="text-neutral-950" />
+          <div className="w-12 h-12 bg-white flex items-center justify-center shrink-0 border-2 border-black shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)]">
+            <Shield size={24} className="text-black" />
           </div>
           {!collapsed && (
             <div>
-              <p className="text-white font-bold text-sm tracking-tight">ADMIN</p>
-              <p className="text-neutral-500 text-[10px] font-mono">PANEL</p>
+              <p className="text-white font-black text-lg tracking-tighter uppercase">Admin</p>
+              <p className="text-neutral-500 text-[10px] font-mono uppercase tracking-widest">Panel</p>
             </div>
           )}
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {!collapsed && (
-          <p className="text-[10px] font-mono text-neutral-600 tracking-widest px-3 mb-3 mt-2">MENU</p>
+          <p className="text-[10px] font-mono text-neutral-600 tracking-[0.2em] px-3 mb-4 mt-2 uppercase">Navigation</p>
         )}
         
         {navItems.map((item) => (
@@ -91,10 +91,10 @@ export default function AdminSidebar({ onRefresh, refreshing = false }: AdminSid
             key={item.href}
             href={item.href}
             title={collapsed ? item.label : undefined}
-            className={`flex items-center gap-3 px-3 py-2.5 text-sm transition-all duration-150 ${
+            className={`flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wide transition-all duration-100 border-2 ${
               isActive(item.href)
-                ? "bg-white text-neutral-950 font-semibold"
-                : "text-neutral-400 hover:text-white hover:bg-neutral-900"
+                ? "bg-white text-black border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+                : "text-white border-transparent hover:border-white hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)]"
             } ${collapsed ? "justify-center" : ""}`}
           >
             <item.icon size={18} className="shrink-0" />
@@ -104,13 +104,13 @@ export default function AdminSidebar({ onRefresh, refreshing = false }: AdminSid
       </nav>
 
       {/* Bottom Actions */}
-      <div className="p-3 border-t border-neutral-800 space-y-1">
+      <div className="p-4 border-t-4 border-white space-y-2">
         {onRefresh && (
           <button
             onClick={onRefresh}
             disabled={refreshing}
             title="Refresh Data"
-            className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all duration-150 disabled:opacity-50 ${collapsed ? "justify-center" : ""}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wide text-white border-2 border-transparent hover:border-white hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-all duration-100 disabled:opacity-50 ${collapsed ? "justify-center" : ""}`}
           >
             <RefreshCw size={18} className={`shrink-0 ${refreshing ? "animate-spin" : ""}`} />
             {!collapsed && <span>Refresh</span>}
@@ -120,7 +120,7 @@ export default function AdminSidebar({ onRefresh, refreshing = false }: AdminSid
         <button
           onClick={handleLogout}
           title="Keluar"
-          className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-950/50 transition-all duration-150 ${collapsed ? "justify-center" : ""}`}
+          className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wide text-white border-2 border-transparent hover:border-white hover:bg-white hover:text-black transition-all duration-100 ${collapsed ? "justify-center" : ""}`}
         >
           <LogOut size={18} className="shrink-0" />
           {!collapsed && <span>Keluar</span>}
@@ -130,9 +130,9 @@ export default function AdminSidebar({ onRefresh, refreshing = false }: AdminSid
       {/* Collapse Toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="hidden lg:flex absolute -right-3 top-16 w-6 h-6 bg-neutral-800 border border-neutral-700 text-neutral-400 hover:text-white items-center justify-center transition-colors"
+        className="hidden lg:flex absolute -right-4 top-20 w-8 h-8 bg-white border-2 border-black text-black items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
       >
-        {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
       </button>
     </div>
   );
@@ -142,45 +142,45 @@ export default function AdminSidebar({ onRefresh, refreshing = false }: AdminSid
       {/* Mobile Toggle */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="lg:hidden fixed bottom-4 left-4 z-50 w-12 h-12 bg-neutral-950 border border-neutral-800 text-white flex items-center justify-center shadow-lg"
+        className="lg:hidden fixed bottom-6 left-6 z-50 w-14 h-14 bg-white border-4 border-black text-black flex items-center justify-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all"
       >
-        <Menu size={20} />
+        <Menu size={24} />
       </button>
 
       {/* Mobile Overlay */}
       {mobileOpen && (
         <div 
-          className="lg:hidden fixed inset-0 bg-black/60 z-40 backdrop-blur-sm"
+          className="lg:hidden fixed inset-0 bg-black/80 z-40"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       {/* Mobile Sidebar */}
       <aside 
-        className={`lg:hidden fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ${
+        className={`lg:hidden fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-200 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <button
           onClick={() => setMobileOpen(false)}
-          className="absolute top-4 right-4 w-8 h-8 bg-neutral-800 text-neutral-400 hover:text-white flex items-center justify-center"
+          className="absolute top-4 right-4 w-10 h-10 bg-white border-2 border-black text-black flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
         >
-          <X size={16} />
+          <X size={18} />
         </button>
         <SidebarContent />
       </aside>
 
       {/* Desktop Sidebar */}
       <aside 
-        className={`hidden lg:block fixed inset-y-0 left-0 z-40 transition-all duration-300 ${
-          collapsed ? "w-16" : "w-56"
+        className={`hidden lg:block fixed inset-y-0 left-0 z-40 transition-all duration-200 ${
+          collapsed ? "w-20" : "w-64"
         }`}
       >
         <SidebarContent />
       </aside>
 
       {/* Spacer */}
-      <div className={`hidden lg:block shrink-0 transition-all duration-300 ${collapsed ? "w-16" : "w-56"}`} />
+      <div className={`hidden lg:block shrink-0 transition-all duration-200 ${collapsed ? "w-20" : "w-64"}`} />
     </>
   );
 }

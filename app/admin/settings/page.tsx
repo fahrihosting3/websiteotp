@@ -91,7 +91,9 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <RefreshCw className="animate-spin text-neutral-400" size={24} />
+        <div className="w-16 h-16 bg-white border-4 border-black flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <RefreshCw className="animate-spin text-black" size={24} />
+        </div>
       </div>
     );
   }
@@ -99,64 +101,64 @@ export default function SettingsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
-      <div className="mb-8">
-        <p className="text-neutral-500 text-xs font-mono mb-1">SETTINGS</p>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white">Settings API</h1>
-        <p className="text-neutral-400 text-sm mt-1">Konfigurasi koneksi ke RumahOTP API</p>
+      <div className="mb-10">
+        <p className="text-neutral-500 text-xs font-mono tracking-[0.2em] mb-2">// SETTINGS</p>
+        <h1 className="text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter">API Config</h1>
+        <p className="text-neutral-400 text-sm mt-2 font-mono">Konfigurasi koneksi ke RumahOTP API</p>
       </div>
 
       {/* Settings Form */}
-      <div className="space-y-5">
+      <div className="space-y-6">
         {/* API Status Card */}
-        <div className="bg-neutral-900 border border-neutral-800 p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white flex items-center justify-center">
-                <Shield size={18} className="text-neutral-950" />
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-white flex items-center justify-center border-2 border-black">
+                <Shield size={28} className="text-black" />
               </div>
               <div>
-                <h2 className="font-bold text-white">RumahOTP API</h2>
-                <p className="text-xs text-neutral-500">Status koneksi API</p>
+                <h2 className="font-black text-white text-xl uppercase">RumahOTP API</h2>
+                <p className="text-xs text-neutral-500 font-mono">Status koneksi API</p>
               </div>
             </div>
-            <div className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium ${
+            <div className={`flex items-center gap-2 px-4 py-2 text-xs font-black uppercase ${
               settings.isActive 
-                ? "bg-emerald-950 border border-emerald-800 text-emerald-400" 
-                : "bg-red-950 border border-red-800 text-red-400"
+                ? "bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" 
+                : "bg-neutral-800 text-white border-2 border-neutral-600"
             }`}>
-              <div className={`w-1.5 h-1.5 rounded-full ${settings.isActive ? "bg-emerald-400" : "bg-red-400"}`}></div>
-              {settings.isActive ? "AKTIF" : "NONAKTIF"}
+              <div className={`w-2 h-2 ${settings.isActive ? "bg-black" : "bg-neutral-500"}`}></div>
+              {settings.isActive ? "ACTIVE" : "INACTIVE"}
             </div>
           </div>
 
-          <label className="flex items-center gap-3 cursor-pointer">
+          <label className="flex items-center gap-4 cursor-pointer">
             <div 
               onClick={() => setSettings(prev => ({ ...prev, isActive: !prev.isActive }))}
-              className={`w-11 h-6 border transition-all relative ${
+              className={`w-14 h-8 border-4 transition-all relative ${
                 settings.isActive 
-                  ? "bg-emerald-600 border-emerald-500" 
-                  : "bg-neutral-700 border-neutral-600"
+                  ? "bg-white border-black" 
+                  : "bg-neutral-800 border-neutral-600"
               }`}
             >
-              <div className={`absolute top-0.5 w-5 h-5 bg-white transition-all ${
-                settings.isActive ? "left-5" : "left-0.5"
+              <div className={`absolute top-0 w-6 h-6 transition-all ${
+                settings.isActive ? "left-6 bg-black" : "left-0 bg-white"
               }`}></div>
             </div>
-            <span className="text-sm text-neutral-300">
+            <span className="text-sm text-white font-bold uppercase">
               {settings.isActive ? "API Aktif" : "API Nonaktif"}
             </span>
           </label>
         </div>
 
         {/* API Key */}
-        <div className="bg-neutral-900 border border-neutral-800 p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-9 h-9 bg-neutral-800 flex items-center justify-center">
-              <Key size={16} className="text-neutral-400" />
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+          <div className="flex items-center gap-4 mb-5">
+            <div className="w-12 h-12 bg-neutral-900 border-2 border-white flex items-center justify-center">
+              <Key size={20} className="text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-white">API Key</h3>
-              <p className="text-xs text-neutral-500">Kunci autentikasi RumahOTP</p>
+              <h3 className="font-black text-white uppercase">API Key</h3>
+              <p className="text-xs text-neutral-500 font-mono">Kunci autentikasi RumahOTP</p>
             </div>
           </div>
           
@@ -166,30 +168,30 @@ export default function SettingsPage() {
               value={settings.apiKey}
               onChange={(e) => setSettings(prev => ({ ...prev, apiKey: e.target.value }))}
               placeholder="Masukkan API Key..."
-              className="w-full px-4 py-2.5 pr-11 bg-neutral-800 border border-neutral-700 text-white font-mono text-sm placeholder:text-neutral-500 focus:outline-none focus:border-neutral-600 transition-colors"
+              className="w-full px-4 py-3 pr-12 bg-neutral-900 border-4 border-white text-white font-mono text-sm placeholder:text-neutral-600 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
             />
             <button
               type="button"
               onClick={() => setShowApiKey(!showApiKey)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-300 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-neutral-400 transition-colors"
             >
-              {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
+              {showApiKey ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          <p className="text-xs text-neutral-500 mt-2">
+          <p className="text-xs text-neutral-500 font-mono mt-3">
             Dapatkan API Key dari dashboard RumahOTP.io
           </p>
         </div>
 
         {/* Base URL */}
-        <div className="bg-neutral-900 border border-neutral-800 p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-9 h-9 bg-neutral-800 flex items-center justify-center">
-              <Server size={16} className="text-neutral-400" />
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+          <div className="flex items-center gap-4 mb-5">
+            <div className="w-12 h-12 bg-neutral-900 border-2 border-white flex items-center justify-center">
+              <Server size={20} className="text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-white">Base URL</h3>
-              <p className="text-xs text-neutral-500">Endpoint API RumahOTP</p>
+              <h3 className="font-black text-white uppercase">Base URL</h3>
+              <p className="text-xs text-neutral-500 font-mono">Endpoint API RumahOTP</p>
             </div>
           </div>
           
@@ -198,19 +200,19 @@ export default function SettingsPage() {
             value={settings.baseUrl}
             onChange={(e) => setSettings(prev => ({ ...prev, baseUrl: e.target.value }))}
             placeholder="https://www.rumahotp.io/api/v1"
-            className="w-full px-4 py-2.5 bg-neutral-800 border border-neutral-700 text-white font-mono text-sm placeholder:text-neutral-500 focus:outline-none focus:border-neutral-600 transition-colors"
+            className="w-full px-4 py-3 bg-neutral-900 border-4 border-white text-white font-mono text-sm placeholder:text-neutral-600 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
           />
         </div>
 
         {/* Webhook URL */}
-        <div className="bg-neutral-900 border border-neutral-800 p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-9 h-9 bg-neutral-800 flex items-center justify-center">
-              <Globe size={16} className="text-neutral-400" />
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+          <div className="flex items-center gap-4 mb-5">
+            <div className="w-12 h-12 bg-neutral-900 border-2 border-white flex items-center justify-center">
+              <Globe size={20} className="text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-white">Webhook URL</h3>
-              <p className="text-xs text-neutral-500">URL untuk menerima notifikasi (opsional)</p>
+              <h3 className="font-black text-white uppercase">Webhook URL</h3>
+              <p className="text-xs text-neutral-500 font-mono">URL untuk notifikasi (opsional)</p>
             </div>
           </div>
           
@@ -219,25 +221,25 @@ export default function SettingsPage() {
             value={settings.webhookUrl}
             onChange={(e) => setSettings(prev => ({ ...prev, webhookUrl: e.target.value }))}
             placeholder="https://yoursite.com/api/webhook"
-            className="w-full px-4 py-2.5 bg-neutral-800 border border-neutral-700 text-white font-mono text-sm placeholder:text-neutral-500 focus:outline-none focus:border-neutral-600 transition-colors"
+            className="w-full px-4 py-3 bg-neutral-900 border-4 border-white text-white font-mono text-sm placeholder:text-neutral-600 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
           />
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-4">
           <button
             onClick={testConnection}
             disabled={testingConnection || !settings.apiKey}
-            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-800 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-black text-white font-black uppercase text-sm border-4 border-white hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {testingConnection ? (
-              <RefreshCw size={16} className="animate-spin" />
+              <RefreshCw size={18} className="animate-spin" />
             ) : connectionStatus === "success" ? (
-              <CheckCircle2 size={16} className="text-emerald-400" />
+              <CheckCircle2 size={18} />
             ) : connectionStatus === "error" ? (
-              <AlertCircle size={16} className="text-red-400" />
+              <AlertCircle size={18} />
             ) : (
-              <Globe size={16} />
+              <Globe size={18} />
             )}
             Test Koneksi
           </button>
@@ -245,24 +247,24 @@ export default function SettingsPage() {
           <button
             onClick={saveSettings}
             disabled={saving}
-            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-white text-neutral-950 hover:bg-neutral-200 text-sm font-medium transition-colors disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-white text-black font-black uppercase text-sm border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all disabled:opacity-50"
           >
             {saving ? (
-              <RefreshCw size={16} className="animate-spin" />
+              <RefreshCw size={18} className="animate-spin" />
             ) : (
-              <Save size={16} />
+              <Save size={18} />
             )}
-            Simpan Settings
+            Simpan
           </button>
         </div>
 
         {/* Info */}
-        <div className="bg-neutral-900 border border-neutral-700 p-4">
-          <div className="flex items-start gap-3">
-            <AlertCircle size={16} className="text-neutral-400 shrink-0 mt-0.5" />
+        <div className="bg-neutral-900 border-4 border-neutral-700 p-5">
+          <div className="flex items-start gap-4">
+            <AlertCircle size={20} className="text-neutral-500 shrink-0 mt-0.5" />
             <div>
-              <p className="font-medium text-neutral-300 text-sm">Informasi</p>
-              <p className="text-sm text-neutral-500 mt-1">
+              <p className="font-black text-white uppercase text-sm">Informasi</p>
+              <p className="text-sm text-neutral-500 mt-2 font-mono leading-relaxed">
                 Pastikan API Key yang dimasukkan valid dan akun RumahOTP dalam keadaan aktif. 
                 Settings ini akan digunakan untuk semua transaksi OTP.
               </p>

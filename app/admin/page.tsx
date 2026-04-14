@@ -94,20 +94,20 @@ export default function AdminOverview() {
     switch (status) {
       case "success":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-950 border border-emerald-800 text-emerald-400 text-xs font-medium">
-            <CheckCircle2 size={12} /> Sukses
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-white text-black text-xs font-black uppercase border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <CheckCircle2 size={12} /> OK
           </span>
         );
       case "pending":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-950 border border-amber-800 text-amber-400 text-xs font-medium">
-            <Clock size={12} /> Pending
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-black text-white text-xs font-black uppercase border-2 border-white">
+            <Clock size={12} /> WAIT
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-950 border border-red-800 text-red-400 text-xs font-medium">
-            <XCircle size={12} /> {status}
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-neutral-800 text-white text-xs font-black uppercase border-2 border-neutral-600">
+            <XCircle size={12} /> {status.toUpperCase()}
           </span>
         );
     }
@@ -116,123 +116,115 @@ export default function AdminOverview() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
         <div>
-          <p className="text-neutral-500 text-xs font-mono mb-1">ADMIN PANEL</p>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Overview</h1>
-          <p className="text-neutral-400 text-sm mt-1">
-            Selamat datang, <span className="text-white">{user?.name}</span>
+          <p className="text-neutral-500 text-xs font-mono tracking-[0.2em] mb-2">// ADMIN PANEL</p>
+          <h1 className="text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter">Overview</h1>
+          <p className="text-neutral-400 text-sm mt-2 font-mono">
+            Welcome back, <span className="text-white font-bold">{user?.name}</span>
           </p>
         </div>
 
         <button
           onClick={fetchData}
           disabled={refreshing}
-          className="flex items-center gap-2 px-4 py-2 bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-800 text-sm transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-white text-black font-black uppercase text-sm border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all disabled:opacity-50"
         >
-          <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+          <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
           Refresh
         </button>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-neutral-900 border border-neutral-800 p-5">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-neutral-800 flex items-center justify-center">
-              <Users size={18} className="text-neutral-400" />
-            </div>
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+          <div className="w-12 h-12 bg-white flex items-center justify-center mb-4 border-2 border-black">
+            <Users size={24} className="text-black" />
           </div>
-          <p className="text-neutral-500 text-xs font-mono mb-1">TOTAL USER</p>
-          <p className="text-2xl font-bold text-white">{stats.totalUsers}</p>
+          <p className="text-neutral-500 text-[10px] font-mono tracking-[0.15em] mb-1">TOTAL USER</p>
+          <p className="text-4xl font-black text-white">{stats.totalUsers}</p>
         </div>
 
-        <div className="bg-neutral-900 border border-neutral-800 p-5">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-neutral-800 flex items-center justify-center">
-              <Receipt size={18} className="text-neutral-400" />
-            </div>
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+          <div className="w-12 h-12 bg-white flex items-center justify-center mb-4 border-2 border-black">
+            <Receipt size={24} className="text-black" />
           </div>
-          <p className="text-neutral-500 text-xs font-mono mb-1">TOTAL TRX</p>
-          <p className="text-2xl font-bold text-white">{stats.totalTransactions}</p>
+          <p className="text-neutral-500 text-[10px] font-mono tracking-[0.15em] mb-1">TOTAL TRX</p>
+          <p className="text-4xl font-black text-white">{stats.totalTransactions}</p>
         </div>
 
-        <div className="bg-neutral-900 border border-neutral-800 p-5">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-amber-950 flex items-center justify-center">
-              <Clock size={18} className="text-amber-400" />
-            </div>
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+          <div className="w-12 h-12 bg-neutral-800 border-2 border-white flex items-center justify-center mb-4">
+            <Clock size={24} className="text-white" />
           </div>
-          <p className="text-neutral-500 text-xs font-mono mb-1">PENDING</p>
-          <p className="text-2xl font-bold text-white">{stats.pendingTransactions}</p>
+          <p className="text-neutral-500 text-[10px] font-mono tracking-[0.15em] mb-1">PENDING</p>
+          <p className="text-4xl font-black text-white">{stats.pendingTransactions}</p>
         </div>
 
-        <div className="bg-neutral-900 border border-neutral-800 p-5">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-emerald-950 flex items-center justify-center">
-              <Wallet size={18} className="text-emerald-400" />
-            </div>
+        <div className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+          <div className="w-12 h-12 bg-black flex items-center justify-center mb-4 border-2 border-white">
+            <Wallet size={24} className="text-white" />
           </div>
-          <p className="text-neutral-500 text-xs font-mono mb-1">TOTAL DEPOSIT</p>
-          <p className="text-lg font-bold text-white">{formatCurrency(stats.totalDeposit)}</p>
+          <p className="text-neutral-600 text-[10px] font-mono tracking-[0.15em] mb-1">TOTAL DEPOSIT</p>
+          <p className="text-2xl font-black text-black">{formatCurrency(stats.totalDeposit)}</p>
         </div>
       </div>
 
       {/* Success/Failed Stats */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-neutral-900 border border-neutral-800 p-5">
+        <div className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-neutral-500 text-xs font-mono mb-1">TRX SUKSES</p>
-              <p className="text-2xl font-bold text-white">{stats.successTransactions}</p>
+              <p className="text-neutral-600 text-[10px] font-mono tracking-[0.15em] mb-1">TRX SUKSES</p>
+              <p className="text-4xl font-black text-black">{stats.successTransactions}</p>
             </div>
-            <div className="w-12 h-12 bg-emerald-950 flex items-center justify-center">
-              <CheckCircle2 size={24} className="text-emerald-400" />
+            <div className="w-16 h-16 bg-black flex items-center justify-center border-2 border-black">
+              <CheckCircle2 size={32} className="text-white" />
             </div>
           </div>
         </div>
-        <div className="bg-neutral-900 border border-neutral-800 p-5">
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-neutral-500 text-xs font-mono mb-1">TRX GAGAL</p>
-              <p className="text-2xl font-bold text-white">{stats.cancelledTransactions}</p>
+              <p className="text-neutral-500 text-[10px] font-mono tracking-[0.15em] mb-1">TRX GAGAL</p>
+              <p className="text-4xl font-black text-white">{stats.cancelledTransactions}</p>
             </div>
-            <div className="w-12 h-12 bg-red-950 flex items-center justify-center">
-              <XCircle size={24} className="text-red-400" />
+            <div className="w-16 h-16 bg-neutral-800 flex items-center justify-center border-2 border-white">
+              <XCircle size={32} className="text-white" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Recent Data */}
-      <div className="bg-neutral-900 border border-neutral-800 p-6">
-        <div className="grid md:grid-cols-2 gap-6">
+      <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+        <div className="grid md:grid-cols-2 gap-8">
           {/* Recent Transactions */}
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-neutral-400">TRANSAKSI TERBARU</h3>
-              <TrendingUp size={14} className="text-neutral-600" />
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-sm font-black text-white uppercase tracking-wider">Transaksi Terbaru</h3>
+              <TrendingUp size={16} className="text-neutral-600" />
             </div>
             <div className="space-y-3">
               {transactions.slice(0, 5).map((trx) => (
                 <div 
                   key={trx.id} 
-                  className="flex items-center justify-between p-3 bg-neutral-800/50 border border-neutral-800 hover:bg-neutral-800 transition-colors"
+                  className="flex items-center justify-between p-4 bg-neutral-900 border-2 border-white hover:bg-neutral-800 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
                 >
                   <div>
-                    <p className="font-medium text-sm text-white">{trx.userEmail}</p>
-                    <p className="text-xs text-neutral-500">{formatDate(trx.createdAt)}</p>
+                    <p className="font-bold text-sm text-white">{trx.userEmail}</p>
+                    <p className="text-xs text-neutral-500 font-mono">{formatDate(trx.createdAt)}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-sm text-white">{formatCurrency(trx.amount)}</p>
+                    <p className="font-black text-sm text-white mb-1">{formatCurrency(trx.amount)}</p>
                     {getStatusBadge(trx.status)}
                   </div>
                 </div>
               ))}
               {transactions.length === 0 && (
-                <div className="text-center py-8 text-neutral-500">
-                  <AlertCircle size={24} className="mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Belum ada transaksi</p>
+                <div className="text-center py-12 border-2 border-dashed border-neutral-700">
+                  <AlertCircle size={32} className="mx-auto mb-3 text-neutral-600" />
+                  <p className="text-sm text-neutral-500 font-mono">No transactions yet</p>
                 </div>
               )}
             </div>
@@ -240,38 +232,38 @@ export default function AdminOverview() {
 
           {/* Recent Users */}
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-neutral-400">USER TERBARU</h3>
-              <ArrowUpRight size={14} className="text-neutral-600" />
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-sm font-black text-white uppercase tracking-wider">User Terbaru</h3>
+              <ArrowUpRight size={16} className="text-neutral-600" />
             </div>
             <div className="space-y-3">
               {users.slice(0, 5).map((u) => (
                 <div 
                   key={u.email} 
-                  className="flex items-center justify-between p-3 bg-neutral-800/50 border border-neutral-800 hover:bg-neutral-800 transition-colors"
+                  className="flex items-center justify-between p-4 bg-neutral-900 border-2 border-white hover:bg-neutral-800 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-white flex items-center justify-center text-neutral-950 font-bold text-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-white flex items-center justify-center text-black font-black text-sm border-2 border-black">
                       {u.username?.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="font-medium text-sm text-white">{u.username}</p>
-                      <p className="text-xs text-neutral-500">{u.email}</p>
+                      <p className="font-bold text-sm text-white">{u.username}</p>
+                      <p className="text-xs text-neutral-500 font-mono">{u.email}</p>
                     </div>
                   </div>
-                  <span className={`px-2 py-0.5 text-xs font-medium ${
+                  <span className={`px-3 py-1 text-xs font-black uppercase ${
                     u.role === "admin" 
-                      ? "bg-red-950 border border-red-800 text-red-400" 
-                      : "bg-neutral-800 border border-neutral-700 text-neutral-400"
+                      ? "bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" 
+                      : "bg-neutral-800 text-white border-2 border-neutral-600"
                   }`}>
                     {u.role?.toUpperCase() || "USER"}
                   </span>
                 </div>
               ))}
               {users.length === 0 && (
-                <div className="text-center py-8 text-neutral-500">
-                  <AlertCircle size={24} className="mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Belum ada user</p>
+                <div className="text-center py-12 border-2 border-dashed border-neutral-700">
+                  <AlertCircle size={32} className="mx-auto mb-3 text-neutral-600" />
+                  <p className="text-sm text-neutral-500 font-mono">No users yet</p>
                 </div>
               )}
             </div>

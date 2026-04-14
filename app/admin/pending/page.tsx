@@ -50,10 +50,10 @@ export default function AdminPendingPage() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-14 h-14 bg-neutral-800 flex items-center justify-center">
-            <RefreshCw className="animate-spin text-neutral-400" size={20} />
+          <div className="w-16 h-16 bg-white border-4 border-black flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <RefreshCw className="animate-spin text-black" size={24} />
           </div>
-          <span className="text-neutral-500 text-sm">Memuat transaksi pending...</span>
+          <span className="text-white text-sm font-mono uppercase tracking-wider">Loading pending...</span>
         </div>
       </div>
     );
@@ -62,102 +62,102 @@ export default function AdminPendingPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
         <div>
-          <p className="text-neutral-500 text-xs font-mono mb-1">ADMIN PANEL</p>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Transaksi Pending</h1>
-          <p className="text-neutral-400 text-sm mt-1">
-            <span className="text-white">{pendingTrx.length}</span> transaksi menunggu pembayaran
+          <p className="text-neutral-500 text-xs font-mono tracking-[0.2em] mb-2">// ADMIN PANEL</p>
+          <h1 className="text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter">Pending</h1>
+          <p className="text-neutral-400 text-sm mt-2 font-mono">
+            <span className="text-white font-bold">{pendingTrx.length}</span> transaksi menunggu
           </p>
         </div>
 
         <button
           onClick={fetchData}
           disabled={refreshing}
-          className="flex items-center gap-2 px-4 py-2 bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-800 text-sm transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-white text-black font-black uppercase text-sm border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all disabled:opacity-50"
         >
-          <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+          <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
           Refresh
         </button>
       </div>
 
       {/* Pending Transactions */}
-      <div className="bg-neutral-900 border border-neutral-800 overflow-hidden">
-        <div className="p-5 border-b border-neutral-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-950 flex items-center justify-center">
-              <Clock size={18} className="text-amber-400" />
+      <div className="bg-black border-4 border-white shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] overflow-hidden">
+        <div className="p-6 border-b-4 border-white">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-neutral-800 border-2 border-white flex items-center justify-center">
+              <Clock size={24} className="text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Transaksi Pending</h2>
-              <p className="text-sm text-neutral-500">Menunggu konfirmasi pembayaran</p>
+              <h2 className="text-xl font-black text-white uppercase">Transaksi Pending</h2>
+              <p className="text-sm text-neutral-500 font-mono">Menunggu konfirmasi pembayaran</p>
             </div>
           </div>
         </div>
 
-        <div className="p-5">
+        <div className="p-6">
           {pendingTrx.length > 0 ? (
             <div className="space-y-4">
               {pendingTrx.map((trx) => (
                 <div 
                   key={trx.id} 
-                  className="bg-neutral-800/50 border border-neutral-800 p-5 hover:bg-neutral-800 transition-colors"
+                  className="bg-neutral-900 border-4 border-white p-6 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-neutral-700 flex items-center justify-center">
-                        <User size={16} className="text-neutral-300" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-white flex items-center justify-center border-2 border-black">
+                        <User size={20} className="text-black" />
                       </div>
                       <div>
-                        <p className="font-medium text-white">{trx.userEmail}</p>
+                        <p className="font-bold text-white">{trx.userEmail}</p>
                         <p className="text-xs font-mono text-neutral-500">{trx.depositId}</p>
                       </div>
                     </div>
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-950 border border-amber-800 text-amber-400 text-xs font-medium">
-                      <Clock size={12} /> Menunggu Pembayaran
+                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white text-xs font-black uppercase border-2 border-white">
+                      <Clock size={14} /> WAITING
                     </span>
                   </div>
                   
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="bg-neutral-900 p-3 border border-neutral-800">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Wallet size={12} className="text-neutral-500" />
-                        <p className="text-neutral-500 text-xs">Nominal</p>
+                    <div className="bg-black p-4 border-2 border-white">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Wallet size={14} className="text-neutral-500" />
+                        <p className="text-neutral-500 text-xs font-mono uppercase">Nominal</p>
                       </div>
-                      <p className="font-medium text-white text-sm">{formatCurrency(trx.amount)}</p>
+                      <p className="font-black text-white">{formatCurrency(trx.amount)}</p>
                     </div>
-                    <div className="bg-neutral-900 p-3 border border-neutral-800">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Wallet size={12} className="text-neutral-500" />
-                        <p className="text-neutral-500 text-xs">Total Bayar</p>
+                    <div className="bg-white p-4 border-2 border-black">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Wallet size={14} className="text-neutral-600" />
+                        <p className="text-neutral-600 text-xs font-mono uppercase">Total</p>
                       </div>
-                      <p className="font-medium text-white text-sm">{formatCurrency(trx.total)}</p>
+                      <p className="font-black text-black">{formatCurrency(trx.total)}</p>
                     </div>
-                    <div className="bg-neutral-900 p-3 border border-neutral-800">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Calendar size={12} className="text-neutral-500" />
-                        <p className="text-neutral-500 text-xs">Dibuat</p>
+                    <div className="bg-black p-4 border-2 border-white">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Calendar size={14} className="text-neutral-500" />
+                        <p className="text-neutral-500 text-xs font-mono uppercase">Dibuat</p>
                       </div>
-                      <p className="font-medium text-white text-sm">{formatDate(trx.createdAt)}</p>
+                      <p className="font-bold text-white text-sm">{formatDate(trx.createdAt)}</p>
                     </div>
-                    <div className="bg-neutral-900 p-3 border border-neutral-800">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Clock size={12} className="text-neutral-500" />
-                        <p className="text-neutral-500 text-xs">Tipe</p>
+                    <div className="bg-black p-4 border-2 border-white">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Clock size={14} className="text-neutral-500" />
+                        <p className="text-neutral-500 text-xs font-mono uppercase">Tipe</p>
                       </div>
-                      <p className="font-medium text-white text-sm uppercase">{trx.type}</p>
+                      <p className="font-black text-white uppercase">{trx.type}</p>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <div className="w-16 h-16 mx-auto mb-4 bg-emerald-950 flex items-center justify-center">
-                <CheckCircle2 size={28} className="text-emerald-400" />
+            <div className="text-center py-16 border-4 border-dashed border-neutral-700">
+              <div className="w-20 h-20 mx-auto mb-4 bg-white flex items-center justify-center border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <CheckCircle2 size={36} className="text-black" />
               </div>
-              <p className="font-medium text-white mb-1">Tidak ada transaksi pending</p>
-              <p className="text-neutral-500 text-sm">Semua transaksi sudah diproses</p>
+              <p className="font-black text-white text-xl uppercase mb-2">All Clear!</p>
+              <p className="text-neutral-500 font-mono">Tidak ada transaksi pending</p>
             </div>
           )}
         </div>
