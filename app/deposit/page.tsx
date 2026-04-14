@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, updateLocalUser } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import {
@@ -26,6 +26,7 @@ type DepositStatus = "idle" | "loading" | "pending" | "success" | "cancel" | "ex
 
 interface DepositData {
   id: string;
+  externalId?: string;
   status: string;
   method: string;
   currency?: {
@@ -36,13 +37,19 @@ interface DepositData {
   };
   total: number;
   fee: number;
-  diterima: number;
-  qr_string: string;
-  qr_image: string;
-  created_at: string;
-  created_at_ts: number;
-  expired_at: string;
-  expired_at_ts: number;
+  diterima?: number;
+  amount?: number;
+  qr_string?: string;
+  qrString?: string;
+  qr_image?: string;
+  qrImage?: string;
+  created_at?: string;
+  createdAt?: string;
+  created_at_ts?: number;
+  expired_at?: string;
+  expiredAt?: string;
+  expired_at_ts?: number;
+  expiredAtTs?: number;
   brand?: {
     name: string;
     icon: string;
@@ -60,15 +67,53 @@ export default function DepositPage() {
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [showPendingNotif, setShowPendingNotif] = useState(false);
+  const [loadingPending, setLoadingPending] = useState(true);
   const router = useRouter();
 
+  // Check for pending deposit on page load
   useEffect(() => {
-    const current = getCurrentUser();
-    if (!current) {
-      router.push("/auth/login");
-      return;
-    }
-    setUser(current);
+    const checkPendingDeposit = async () => {
+      const current = getCurrentUser();
+      if (!current) {
+        router.push("/auth/login");
+        return;
+      }
+      setUser(current);
+
+      try {
+        const res = await fetch(`/api/deposit/pending?user_id=${current.id}`);
+        const data = await res.json();
+
+        if (data.success && data.hasPending && data.transaction) {
+          const tx = data.transaction;
+          // Check if not expired
+          const now = Date.now();
+          const expiredAt = tx.expiredAtTs || new Date(tx.expiredAt).getTime();
+          
+          if (expiredAt > now) {
+            setDepositData({
+              id: tx.externalId,
+              status: tx.status,
+              method: tx.method,
+              total: tx.total,
+              fee: tx.fee,
+              diterima: tx.amount,
+              qr_string: tx.qrString,
+              qr_image: tx.qrImage,
+              expired_at_ts: expiredAt,
+            });
+            setStatus("pending");
+            toast.info("Melanjutkan pembayaran yang belum selesai");
+          }
+        }
+      } catch (err) {
+        console.error("Error checking pending deposit:", err);
+      } finally {
+        setLoadingPending(false);
+      }
+    };
+
+    checkPendingDeposit();
   }, [router]);
 
   // Countdown timer
@@ -77,7 +122,7 @@ export default function DepositPage() {
 
     const interval = setInterval(() => {
       const now = Date.now();
-      const expiredAt = depositData.expired_at_ts;
+      const expiredAt = depositData.expired_at_ts || depositData.expiredAtTs || 0;
       const remaining = Math.max(0, Math.floor((expiredAt - now) / 1000));
 
       if (remaining <= 0) {
@@ -115,6 +160,7 @@ export default function DepositPage() {
     setStatus("loading");
 
     try {
+      // Create deposit via rumahotp API
       const res = await fetch(
         `https://www.rumahotp.io/api/v2/deposit/create?amount=${numAmount}&payment_id=qris`,
         {
@@ -129,6 +175,18 @@ export default function DepositPage() {
       const data = await res.json();
 
       if (data.success) {
+        // Save to MongoDB
+        await fetch("/api/deposit/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id,
+            userEmail: user.email,
+            amount: numAmount,
+            depositData: data.data,
+          }),
+        });
+
         setDepositData(data.data);
         setStatus("pending");
         toast.success("QRIS berhasil dibuat!");
@@ -149,28 +207,28 @@ export default function DepositPage() {
     setCheckingStatus(true);
 
     try {
-      const res = await fetch(
-        `https://www.rumahotp.io/api/v2/deposit/get_status?deposit_id=${depositData.id}`,
-        {
-          method: "GET",
-          headers: {
-            "x-apikey": process.env.NEXT_PUBLIC_RUMAHOTP_API_KEY || "",
-            Accept: "application/json",
-          },
-        }
-      );
-
+      const depositId = depositData.id || depositData.externalId;
+      const res = await fetch(`/api/deposit/status?deposit_id=${depositId}`);
       const data = await res.json();
 
       if (data.success) {
         if (data.data.status === "success") {
           setStatus("success");
           toast.success("Pembayaran berhasil!");
+          
+          // Update local user balance if returned
+          if (data.data.balanceUpdated && data.data.amount) {
+            const currentUser = getCurrentUser();
+            if (currentUser) {
+              updateLocalUser({
+                balance: (currentUser.balance || 0) + data.data.amount,
+              });
+            }
+          }
         } else if (data.data.status === "cancel") {
           setStatus("cancel");
           toast.error("Pembayaran dibatalkan");
         } else if (data.data.status === "pending" && showNotif) {
-          // Show pending notification with animation
           setShowPendingNotif(true);
           setTimeout(() => setShowPendingNotif(false), 3000);
         }
@@ -187,7 +245,7 @@ export default function DepositPage() {
     if (status !== "pending") return;
 
     const interval = setInterval(() => {
-      checkPaymentStatus(false); // Don't show notif on auto-check
+      checkPaymentStatus(false);
     }, 10000);
 
     return () => clearInterval(interval);
@@ -214,13 +272,27 @@ export default function DepositPage() {
     }
   };
 
+  if (loadingPending) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-slate-100">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="w-8 h-8 animate-spin text-slate-600" />
+            <p className="text-slate-600 font-medium">Memuat...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Navbar />
       <div className="min-h-[calc(100vh-80px)] relative overflow-hidden bg-slate-100">
         {/* Pending Payment Notification */}
         {showPendingNotif && (
-          <div className="fixed top-24 left-1/2 z-50 animate-slideDown">
+          <div className="fixed top-24 left-1/2 z-50 animate-slideDown -translate-x-1/2">
             <div className="bg-amber-50 border-4 border-slate-800 px-6 py-4 shadow-[6px_6px_0px_#1e293b] flex items-center gap-3">
               <div className="w-10 h-10 bg-amber-200 border-2 border-slate-800 flex items-center justify-center">
                 <Loader2 size={20} className="text-slate-800 animate-spin" />
@@ -422,9 +494,9 @@ export default function DepositPage() {
                 {/* QR Image */}
                 <div className="flex justify-center mb-6">
                   <div className="bg-white border-4 border-slate-800 p-4 shadow-[6px_6px_0px_#1e293b]">
-                    {depositData?.qr_image && (
+                    {(depositData?.qr_image || depositData?.qrImage) && (
                       <Image
-                        src={depositData.qr_image}
+                        src={depositData.qr_image || depositData.qrImage || ""}
                         alt="QRIS Code"
                         width={240}
                         height={240}
@@ -446,7 +518,7 @@ export default function DepositPage() {
                   <div className="flex items-center justify-between bg-slate-100 border-3 border-slate-800 p-3">
                     <span className="text-xs font-bold text-slate-600">Nominal</span>
                     <span className="text-sm font-bold text-slate-800">
-                      {formatCurrency(depositData?.diterima || 0)}
+                      {formatCurrency(depositData?.diterima || depositData?.amount || 0)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between bg-slate-100 border-3 border-slate-800 p-3">
@@ -463,10 +535,10 @@ export default function DepositPage() {
                     <p className="text-xs font-bold text-slate-700 mb-2">ALAMAT WALLET</p>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 bg-slate-100 border-3 border-slate-800 p-3 font-mono text-sm text-slate-800 truncate">
-                        {depositData.qr_string}
+                        {depositData.qr_string || depositData.qrString}
                       </div>
                       <button
-                        onClick={() => copyToClipboard(depositData.qr_string)}
+                        onClick={() => copyToClipboard(depositData.qr_string || depositData.qrString || "")}
                         className="w-12 h-12 bg-sky-200 border-3 border-slate-800 flex items-center justify-center shadow-[3px_3px_0px_#1e293b] hover:shadow-[4px_4px_0px_#1e293b] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all"
                       >
                         <Copy size={18} className="text-slate-800" />
@@ -480,11 +552,11 @@ export default function DepositPage() {
                   <div>
                     <p className="text-[10px] font-mono text-slate-500">DEPOSIT ID</p>
                     <p className="font-mono text-sm font-bold text-slate-800">
-                      {depositData?.id}
+                      {depositData?.id || depositData?.externalId}
                     </p>
                   </div>
                   <button
-                    onClick={() => copyToClipboard(depositData?.id || "")}
+                    onClick={() => copyToClipboard(depositData?.id || depositData?.externalId || "")}
                     className="p-2 hover:bg-slate-200 transition-colors text-slate-800"
                   >
                     <Copy size={16} />
@@ -548,7 +620,7 @@ export default function DepositPage() {
                   <p className="text-slate-600 mb-6">
                     Saldo Anda telah ditambahkan sebesar{" "}
                     <span className="font-bold text-slate-800">
-                      {formatCurrency(depositData?.diterima || 0)}
+                      {formatCurrency(depositData?.diterima || depositData?.amount || 0)}
                     </span>
                   </p>
                 </>

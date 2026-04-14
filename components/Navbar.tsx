@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { getCurrentUser, logoutUser } from "@/lib/auth";
-import { LogOut, Menu, X, Terminal, User, Mail, Code2, Wallet, ChevronDown } from "lucide-react";
+import { LogOut, Menu, X, Terminal, User, Mail, Code2, Wallet, ChevronDown, Shield } from "lucide-react";
+import { isAdmin } from "@/lib/auth";
 import axios from "axios";
 
 export default function Navbar() {
@@ -119,6 +120,15 @@ export default function Navbar() {
                 >
                   Deposit
                 </Link>
+                {isAdmin() && (
+                  <Link 
+                    href="/admin" 
+                    className="text-purple-600 text-sm font-medium hover:text-purple-800 transition-colors duration-200 flex items-center gap-1"
+                  >
+                    <Shield size={14} />
+                    Admin
+                  </Link>
+                )}
 
                 {/* Balance + Avatar Section */}
                 <div className="flex items-center gap-3 pl-4 border-l border-gray-200" ref={dropdownRef}>
@@ -288,6 +298,16 @@ export default function Navbar() {
                 >
                   Deposit
                 </Link>
+                {isAdmin() && (
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-2 text-purple-600 text-sm font-medium hover:text-purple-800 transition-colors duration-200 py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Shield size={14} />
+                    Admin Panel
+                  </Link>
+                )}
                 <div className="border-t border-gray-100 pt-4 space-y-3">
                   {/* Mobile User Info */}
                   <div className="flex items-center gap-3 px-2">
