@@ -2,7 +2,7 @@
 // External API Database Integration + Local Storage Fallback
 // API: https://orderkuota-saua.vercel.app
 
-const API_BASE = "https://orderkuota-saua.vercel.app/api";
+const API_BASE = "https://api-orkut-olive.vercel.app/api";
 
 // Local storage keys
 const USERS_KEY = "panel_users";
