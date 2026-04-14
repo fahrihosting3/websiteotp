@@ -1,4 +1,3 @@
-// app/dashboard/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -15,6 +14,7 @@ import {
   CreditCard,
   History,
   Shield,
+  Zap,
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -65,13 +65,15 @@ export default function Dashboard() {
 
   return (
     <UserSidebar>
-      <div className="min-h-full bg-neutral-100">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-full">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 animate-slide-up">
             <div>
-              <p className="text-sm text-neutral-500 mb-1">Selamat datang kembali,</p>
-              <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900">
+              <p className="text-sm font-bold uppercase tracking-wider text-neutral-500 mb-1">
+                Selamat datang kembali,
+              </p>
+              <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
                 {user?.name}
               </h1>
             </div>
@@ -79,26 +81,34 @@ export default function Dashboard() {
             {user?.role === "admin" && (
               <Link
                 href="/admin"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-5 py-3 bg-black text-white font-bold uppercase tracking-wider border-4 border-black hover:bg-white hover:text-black transition-all"
+                style={{ boxShadow: '4px 4px 0px 0px rgba(0,0,0,0.3)' }}
               >
-                <Shield size={16} />
+                <Shield size={18} />
                 Admin Panel
               </Link>
             )}
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 stagger">
             {/* Saldo Card */}
-            <div className="bg-white rounded-xl border border-neutral-200 p-5 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 bg-neutral-900 rounded-lg flex items-center justify-center">
-                    <Wallet size={20} className="text-white" />
+            <div 
+              className="bg-white border-4 border-black p-6 animate-slide-up"
+              style={{ boxShadow: '8px 8px 0px 0px rgba(0,0,0,1)' }}
+            >
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div 
+                    className="w-14 h-14 bg-black flex items-center justify-center animate-pulse-neo"
+                  >
+                    <Wallet size={24} className="text-white" />
                   </div>
                   <div>
-                    <p className="text-xs text-neutral-500 font-medium">SALDO ANDA</p>
-                    <p className="text-2xl font-bold text-neutral-900">
+                    <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                      SALDO ANDA
+                    </p>
+                    <p className="text-3xl font-black">
                       {loadingBalance ? "..." : balance?.formated || "Rp 0"}
                     </p>
                   </div>
@@ -106,82 +116,149 @@ export default function Dashboard() {
                 <button 
                   onClick={fetchBalance} 
                   disabled={refreshing} 
-                  className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                  className="p-3 border-4 border-black hover:bg-black hover:text-white transition-all"
+                  style={{ boxShadow: '3px 3px 0px 0px rgba(0,0,0,1)' }}
                 >
-                  <RefreshCw size={16} className={`text-neutral-400 ${refreshing ? "animate-spin" : ""}`} />
+                  <RefreshCw size={18} className={refreshing ? "animate-spin" : ""} />
                 </button>
               </div>
-              <div className="bg-neutral-50 rounded-lg p-3">
-                <p className="text-[10px] text-neutral-400 font-medium mb-1">API USERNAME</p>
-                <p className="font-mono text-sm text-neutral-700">{balance?.username || "-"}</p>
+              <div 
+                className="bg-neutral-100 border-4 border-black p-4"
+                style={{ boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)' }}
+              >
+                <p className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1">
+                  API USERNAME
+                </p>
+                <p className="font-mono font-bold text-lg">{balance?.username || "-"}</p>
               </div>
             </div>
 
             {/* User Card */}
-            <div className="bg-white rounded-xl border border-neutral-200 p-5 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 bg-neutral-100 rounded-lg flex items-center justify-center">
-                  <User size={20} className="text-neutral-600" />
+            <div 
+              className="bg-white border-4 border-black p-6 animate-slide-up"
+              style={{ boxShadow: '8px 8px 0px 0px rgba(0,0,0,1)', animationDelay: '0.1s' }}
+            >
+              <div className="flex items-start gap-4">
+                <div 
+                  className="w-16 h-16 bg-black text-white flex items-center justify-center font-black text-2xl"
+                >
+                  {user?.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'U'}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-neutral-500 font-medium">AKUN ANDA</p>
-                  <p className="text-base font-semibold text-neutral-900 truncate">{user?.name}</p>
-                  <p className="text-sm text-neutral-500 truncate">{user?.email}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                    AKUN ANDA
+                  </p>
+                  <p className="text-xl font-black truncate">{user?.name}</p>
+                  <p className="text-sm text-neutral-600 truncate font-medium">{user?.email}</p>
                 </div>
-                <span className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${
-                  user?.role === "admin" 
-                    ? "bg-red-100 text-red-700" 
-                    : "bg-neutral-100 text-neutral-700"
-                }`}>
-                  {user?.role === "admin" ? <Shield size={12} /> : <User size={12} />}
+                <div 
+                  className={`px-4 py-2 border-4 border-black font-black text-sm uppercase ${
+                    user?.role === "admin" ? "bg-black text-white" : "bg-white text-black"
+                  }`}
+                  style={{ boxShadow: '3px 3px 0px 0px rgba(0,0,0,1)' }}
+                >
                   {user?.role?.toUpperCase() || "USER"}
-                </span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Quick Actions */}
-          <h2 className="text-sm font-semibold text-neutral-500 mb-4 uppercase tracking-wide">Menu Cepat</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="mb-6 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <h2 className="text-sm font-black uppercase tracking-wider text-neutral-500 mb-4 flex items-center gap-2">
+              <Zap size={16} />
+              Menu Cepat
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger">
             {/* Pilih Layanan */}
-            <Link href="/services" className="group">
-              <div className="bg-white rounded-xl border border-neutral-200 p-5 shadow-sm hover:shadow-md hover:border-neutral-300 transition-all h-full">
+            <Link href="/services" className="group animate-slide-up" style={{ animationDelay: '0.3s' }}>
+              <div 
+                className="bg-white border-4 border-black p-6 h-full transition-all group-hover:translate-x-[-4px] group-hover:translate-y-[-4px]"
+                style={{ 
+                  boxShadow: '8px 8px 0px 0px rgba(0,0,0,1)',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '12px 12px 0px 0px rgba(0,0,0,1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '8px 8px 0px 0px rgba(0,0,0,1)';
+                }}
+              >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <ShoppingCart size={22} className="text-amber-600" />
+                  <div 
+                    className="w-14 h-14 bg-black flex items-center justify-center group-hover:animate-wiggle"
+                  >
+                    <ShoppingCart size={24} className="text-white" />
                   </div>
-                  <ArrowRight size={18} className="text-neutral-300 group-hover:text-neutral-500 group-hover:translate-x-1 transition-all" />
+                  <ArrowRight size={24} className="text-black group-hover:translate-x-2 transition-transform" />
                 </div>
-                <h3 className="text-base font-semibold text-neutral-900 mb-1">Pilih Layanan</h3>
-                <p className="text-sm text-neutral-500">Beli nomor virtual untuk verifikasi OTP</p>
+                <h3 className="text-xl font-black mb-2">PILIH LAYANAN</h3>
+                <p className="text-sm text-neutral-600 font-medium">
+                  Beli nomor virtual untuk verifikasi OTP
+                </p>
               </div>
             </Link>
 
             {/* Deposit */}
-            <Link href="/deposit" className="group">
-              <div className="bg-white rounded-xl border border-neutral-200 p-5 shadow-sm hover:shadow-md hover:border-neutral-300 transition-all h-full">
+            <Link href="/deposit" className="group animate-slide-up" style={{ animationDelay: '0.4s' }}>
+              <div 
+                className="bg-white border-4 border-black p-6 h-full transition-all group-hover:translate-x-[-4px] group-hover:translate-y-[-4px]"
+                style={{ 
+                  boxShadow: '8px 8px 0px 0px rgba(0,0,0,1)',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '12px 12px 0px 0px rgba(0,0,0,1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '8px 8px 0px 0px rgba(0,0,0,1)';
+                }}
+              >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <CreditCard size={22} className="text-emerald-600" />
+                  <div 
+                    className="w-14 h-14 bg-black flex items-center justify-center group-hover:animate-wiggle"
+                  >
+                    <CreditCard size={24} className="text-white" />
                   </div>
-                  <ArrowRight size={18} className="text-neutral-300 group-hover:text-neutral-500 group-hover:translate-x-1 transition-all" />
+                  <ArrowRight size={24} className="text-black group-hover:translate-x-2 transition-transform" />
                 </div>
-                <h3 className="text-base font-semibold text-neutral-900 mb-1">Deposit Saldo</h3>
-                <p className="text-sm text-neutral-500">Isi saldo untuk membeli nomor OTP</p>
+                <h3 className="text-xl font-black mb-2">DEPOSIT SALDO</h3>
+                <p className="text-sm text-neutral-600 font-medium">
+                  Isi saldo untuk membeli nomor OTP
+                </p>
               </div>
             </Link>
 
             {/* Riwayat */}
-            <Link href="/history" className="group sm:col-span-2 lg:col-span-1">
-              <div className="bg-white rounded-xl border border-neutral-200 p-5 shadow-sm hover:shadow-md hover:border-neutral-300 transition-all h-full">
+            <Link href="/history" className="group sm:col-span-2 lg:col-span-1 animate-slide-up" style={{ animationDelay: '0.5s' }}>
+              <div 
+                className="bg-white border-4 border-black p-6 h-full transition-all group-hover:translate-x-[-4px] group-hover:translate-y-[-4px]"
+                style={{ 
+                  boxShadow: '8px 8px 0px 0px rgba(0,0,0,1)',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '12px 12px 0px 0px rgba(0,0,0,1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '8px 8px 0px 0px rgba(0,0,0,1)';
+                }}
+              >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <History size={22} className="text-sky-600" />
+                  <div 
+                    className="w-14 h-14 bg-black flex items-center justify-center group-hover:animate-wiggle"
+                  >
+                    <History size={24} className="text-white" />
                   </div>
-                  <ArrowRight size={18} className="text-neutral-300 group-hover:text-neutral-500 group-hover:translate-x-1 transition-all" />
+                  <ArrowRight size={24} className="text-black group-hover:translate-x-2 transition-transform" />
                 </div>
-                <h3 className="text-base font-semibold text-neutral-900 mb-1">Riwayat Transaksi</h3>
-                <p className="text-sm text-neutral-500">Lihat semua riwayat deposit dan pembelian</p>
+                <h3 className="text-xl font-black mb-2">RIWAYAT TRANSAKSI</h3>
+                <p className="text-sm text-neutral-600 font-medium">
+                  Lihat semua riwayat deposit dan pembelian
+                </p>
               </div>
             </Link>
           </div>

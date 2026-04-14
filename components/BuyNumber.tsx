@@ -56,7 +56,6 @@ export default function BuyNumber() {
 
   const totalSlides = Math.ceil(services.length / ITEMS_PER_SLIDE);
 
-  // Load Services
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -73,7 +72,6 @@ export default function BuyNumber() {
     fetchServices();
   }, []);
 
-  // Load Countries ketika service dipilih
   useEffect(() => {
     if (!selectedService) return;
     const fetchCountries = async () => {
@@ -122,72 +120,83 @@ export default function BuyNumber() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 bg-neutral-900 rounded-lg flex items-center justify-center">
-            <ShoppingCart size={18} className="text-white" />
+      <div className="mb-8 animate-slide-up">
+        <div className="flex items-center gap-4 mb-2">
+          <div 
+            className="w-12 h-12 bg-black flex items-center justify-center border-4 border-black"
+            style={{ boxShadow: '4px 4px 0px 0px rgba(0,0,0,0.3)' }}
+          >
+            <ShoppingCart size={20} className="text-white" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900">Beli Nomor Virtual</h1>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight">BELI NOMOR VIRTUAL</h1>
+            <p className="text-sm text-neutral-600 font-medium">Pilih aplikasi, lalu pilih negara untuk membeli nomor OTP</p>
           </div>
         </div>
-        <p className="text-sm text-neutral-500">Pilih aplikasi, lalu pilih negara untuk membeli nomor OTP</p>
       </div>
 
       {/* Step 1: Pilih Aplikasi */}
-      <div className="mb-8">
+      <div className="mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold text-neutral-500 bg-neutral-100 px-2.5 py-1 rounded-md">STEP 1</span>
-            <span className="text-sm font-medium text-neutral-700">Pilih Aplikasi</span>
+            <span 
+              className="text-xs font-black uppercase tracking-wider px-3 py-1 bg-black text-white border-2 border-black"
+              style={{ boxShadow: '2px 2px 0px 0px rgba(0,0,0,1)' }}
+            >
+              STEP 1
+            </span>
+            <span className="font-bold">Pilih Aplikasi</span>
             {selectedService && (
-              <span className="text-xs font-medium text-white bg-neutral-900 px-2.5 py-1 rounded-md">
+              <span 
+                className="text-xs font-bold px-3 py-1 bg-white border-2 border-black"
+                style={{ boxShadow: '2px 2px 0px 0px rgba(0,0,0,1)' }}
+              >
                 {selectedService.service_name}
               </span>
             )}
           </div>
 
-          {/* Pagination Controls */}
           {totalSlides > 1 && (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-neutral-500">
+              <span className="text-xs font-bold text-neutral-500">
                 {currentSlide + 1} / {totalSlides}
               </span>
               <button
                 onClick={() => setCurrentSlide((p) => Math.max(0, p - 1))}
                 disabled={currentSlide === 0}
-                className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-colors ${
+                className={`w-10 h-10 flex items-center justify-center border-4 border-black transition-all ${
                   currentSlide === 0
-                    ? "bg-neutral-100 border-neutral-200 text-neutral-300 cursor-not-allowed"
-                    : "bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                    ? "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                    : "bg-white text-black hover:bg-black hover:text-white"
                 }`}
+                style={{ boxShadow: currentSlide === 0 ? 'none' : '3px 3px 0px 0px rgba(0,0,0,1)' }}
               >
-                <ChevronLeft size={16} />
+                <ChevronLeft size={18} />
               </button>
               <button
                 onClick={() => setCurrentSlide((p) => Math.min(totalSlides - 1, p + 1))}
                 disabled={currentSlide === totalSlides - 1}
-                className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-colors ${
+                className={`w-10 h-10 flex items-center justify-center border-4 border-black transition-all ${
                   currentSlide === totalSlides - 1
-                    ? "bg-neutral-100 border-neutral-200 text-neutral-300 cursor-not-allowed"
-                    : "bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                    ? "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                    : "bg-white text-black hover:bg-black hover:text-white"
                 }`}
+                style={{ boxShadow: currentSlide === totalSlides - 1 ? 'none' : '3px 3px 0px 0px rgba(0,0,0,1)' }}
               >
-                <ChevronRight size={16} />
+                <ChevronRight size={18} />
               </button>
             </div>
           )}
         </div>
 
-        {/* Dot Indicators */}
         {totalSlides > 1 && (
-          <div className="flex gap-1.5 mb-4">
+          <div className="flex gap-2 mb-4">
             {Array.from({ length: totalSlides }).map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentSlide(i)}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === currentSlide ? "w-6 bg-neutral-900" : "w-1.5 bg-neutral-300"
+                className={`h-2 border-2 border-black transition-all ${
+                  i === currentSlide ? "w-8 bg-black" : "w-2 bg-white"
                 }`}
               />
             ))}
@@ -195,11 +204,14 @@ export default function BuyNumber() {
         )}
 
         {/* Services Grid */}
-        <div className="bg-white rounded-xl border border-neutral-200 p-4 shadow-sm">
+        <div 
+          className="bg-white border-4 border-black p-4"
+          style={{ boxShadow: '8px 8px 0px 0px rgba(0,0,0,1)' }}
+        >
           {loadingServices ? (
             <div className="flex items-center justify-center py-12 gap-3">
-              <Loader2 size={20} className="animate-spin text-neutral-400" />
-              <span className="text-sm text-neutral-500">Memuat layanan...</span>
+              <Loader2 size={24} className="animate-spin text-black" />
+              <span className="font-bold">Memuat layanan...</span>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -209,15 +221,18 @@ export default function BuyNumber() {
                   <button
                     key={service.service_code}
                     onClick={() => setSelectedService(service)}
-                    className={`relative p-4 rounded-lg border-2 transition-all flex flex-col items-center gap-2 ${
+                    className={`relative p-4 border-4 border-black transition-all flex flex-col items-center gap-2 ${
                       isSelected
-                        ? "border-neutral-900 bg-neutral-50"
-                        : "border-neutral-200 bg-white hover:border-neutral-300 hover:bg-neutral-50"
+                        ? "bg-black text-white translate-x-1 translate-y-1"
+                        : "bg-white hover:translate-x-[-2px] hover:translate-y-[-2px]"
                     }`}
+                    style={{ 
+                      boxShadow: isSelected ? '0px 0px 0px 0px rgba(0,0,0,1)' : '4px 4px 0px 0px rgba(0,0,0,1)'
+                    }}
                   >
                     {isSelected && (
-                      <div className="absolute top-2 right-2 w-5 h-5 bg-neutral-900 rounded-full flex items-center justify-center">
-                        <Check size={12} className="text-white" />
+                      <div className="absolute top-2 right-2 w-6 h-6 bg-white flex items-center justify-center border-2 border-black">
+                        <Check size={14} className="text-black" />
                       </div>
                     )}
                     <img
@@ -225,7 +240,7 @@ export default function BuyNumber() {
                       alt={service.service_name}
                       className="w-10 h-10 object-contain"
                     />
-                    <span className="text-xs font-medium text-neutral-700 text-center leading-tight">
+                    <span className={`text-xs font-bold text-center leading-tight uppercase ${isSelected ? 'text-white' : 'text-black'}`}>
                       {service.service_name}
                     </span>
                   </button>
@@ -238,100 +253,113 @@ export default function BuyNumber() {
 
       {/* Step 2: Pilih Negara */}
       {selectedService && (
-        <div>
+        <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold text-neutral-500 bg-neutral-100 px-2.5 py-1 rounded-md">STEP 2</span>
-              <span className="text-sm font-medium text-neutral-700">Pilih Negara</span>
-              <Globe size={14} className="text-neutral-400" />
+              <span 
+                className="text-xs font-black uppercase tracking-wider px-3 py-1 bg-black text-white border-2 border-black"
+                style={{ boxShadow: '2px 2px 0px 0px rgba(0,0,0,1)' }}
+              >
+                STEP 2
+              </span>
+              <span className="font-bold">Pilih Negara</span>
+              <Globe size={16} className="text-neutral-500" />
             </div>
             {loadingCountries && (
-              <Loader2 size={16} className="animate-spin text-neutral-400" />
+              <Loader2 size={18} className="animate-spin text-black" />
             )}
           </div>
 
           {/* Search */}
           <div className="relative mb-4">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" />
             <input
               type="text"
               placeholder="Cari negara..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
+              className="w-full pl-12 pr-4 py-3 bg-white border-4 border-black font-medium focus:outline-none"
+              style={{ boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)' }}
             />
           </div>
 
           {loadingCountries ? (
-            <div className="bg-white rounded-xl border border-neutral-200 p-12 text-center shadow-sm">
-              <Loader2 size={24} className="animate-spin mx-auto mb-3 text-neutral-400" />
-              <span className="text-sm text-neutral-500">Memuat negara...</span>
+            <div 
+              className="bg-white border-4 border-black p-12 text-center"
+              style={{ boxShadow: '8px 8px 0px 0px rgba(0,0,0,1)' }}
+            >
+              <Loader2 size={32} className="animate-spin mx-auto mb-3 text-black" />
+              <span className="font-bold">Memuat negara...</span>
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
-              {/* Table Header - Desktop */}
-              <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_auto] gap-4 px-5 py-3 bg-neutral-900 text-white text-xs font-semibold">
+            <div 
+              className="bg-white border-4 border-black overflow-hidden"
+              style={{ boxShadow: '8px 8px 0px 0px rgba(0,0,0,1)' }}
+            >
+              {/* Table Header */}
+              <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_auto] gap-4 px-5 py-3 bg-black text-white text-xs font-black uppercase tracking-wider">
                 <span>Negara</span>
                 <span>Prefix</span>
                 <span>Stok</span>
                 <span>Harga / Aksi</span>
               </div>
 
-              {/* Table Header - Mobile */}
-              <div className="sm:hidden grid grid-cols-2 gap-4 px-4 py-3 bg-neutral-900 text-white text-xs font-semibold">
+              <div className="sm:hidden grid grid-cols-2 gap-4 px-4 py-3 bg-black text-white text-xs font-black uppercase tracking-wider">
                 <span>Negara</span>
                 <span className="text-right">Harga</span>
               </div>
 
               {/* Rows */}
-              <div className="divide-y divide-neutral-100">
+              <div className="divide-y-4 divide-black">
                 {filteredCountries.map((country) => {
                   const priceInfo = country.pricelist[0];
                   return (
-                    <div key={country.number_id} className="hover:bg-neutral-50 transition-colors">
-                      {/* Mobile Layout */}
+                    <div key={country.number_id} className="hover:bg-neutral-100 transition-colors">
+                      {/* Mobile */}
                       <div className="sm:hidden flex items-center justify-between px-4 py-3 gap-3">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
                           <img
                             src={country.img}
                             alt={country.name}
-                            className="w-8 h-6 object-cover rounded border border-neutral-200 flex-shrink-0"
+                            className="w-8 h-6 object-cover border-2 border-black flex-shrink-0"
                           />
                           <div className="min-w-0">
-                            <p className="text-sm font-medium text-neutral-900 truncate">{country.name}</p>
-                            <p className="text-xs text-neutral-500">{country.prefix} | Stok: {country.stock_total}</p>
+                            <p className="text-sm font-bold truncate">{country.name}</p>
+                            <p className="text-xs text-neutral-600 font-medium">{country.prefix} | Stok: {country.stock_total}</p>
                           </div>
                         </div>
                         <button
                           onClick={() => goToDetail(country)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 text-white text-xs font-semibold rounded-lg hover:bg-neutral-800 transition-colors flex-shrink-0"
+                          className="flex items-center gap-2 px-3 py-2 bg-black text-white text-xs font-bold uppercase border-2 border-black hover:bg-white hover:text-black transition-all"
+                          style={{ boxShadow: '2px 2px 0px 0px rgba(0,0,0,1)' }}
                         >
                           <span>{priceInfo?.price_format || "Lihat"}</span>
                           <ArrowRight size={12} />
                         </button>
                       </div>
 
-                      {/* Desktop Layout */}
-                      <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_auto] gap-4 items-center px-5 py-3">
+                      {/* Desktop */}
+                      <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_auto] gap-4 items-center px-5 py-4">
                         <div className="flex items-center gap-3">
                           <img
                             src={country.img}
                             alt={country.name}
-                            className="w-9 h-6 object-cover rounded border border-neutral-200"
+                            className="w-10 h-7 object-cover border-2 border-black"
                           />
-                          <span className="text-sm font-medium text-neutral-900">{country.name}</span>
+                          <span className="font-bold">{country.name}</span>
                         </div>
-                        <span className="text-sm text-neutral-600 font-mono">{country.prefix}</span>
+                        <span className="font-mono font-bold">{country.prefix}</span>
                         <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${country.stock_total > 0 ? "bg-emerald-500" : "bg-red-500"}`} />
-                          <span className="text-sm font-medium text-neutral-900">{country.stock_total}</span>
+                          <div className={`w-3 h-3 border-2 border-black ${country.stock_total > 0 ? "bg-black" : "bg-white"}`} />
+                          <span className="font-bold">{country.stock_total}</span>
                         </div>
                         <button
                           onClick={() => goToDetail(country)}
-                          className="flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white text-sm font-semibold rounded-lg hover:bg-neutral-800 transition-colors"
+                          className="flex items-center gap-2 px-4 py-2 bg-black text-white font-bold uppercase text-sm border-4 border-black hover:bg-white hover:text-black transition-all"
+                          style={{ boxShadow: '3px 3px 0px 0px rgba(0,0,0,1)' }}
                         >
                           <span>{priceInfo?.price_format || "Lihat"}</span>
-                          <ArrowRight size={14} />
+                          <ArrowRight size={16} />
                         </button>
                       </div>
                     </div>
@@ -340,10 +368,10 @@ export default function BuyNumber() {
 
                 {filteredCountries.length === 0 && !loadingCountries && (
                   <div className="px-5 py-12 text-center">
-                    <Globe size={32} className="mx-auto mb-3 text-neutral-300" />
-                    <p className="text-neutral-500 font-medium">Tidak ada negara ditemukan</p>
+                    <Globe size={40} className="mx-auto mb-3 text-neutral-300" />
+                    <p className="font-bold text-lg">Tidak ada negara ditemukan</p>
                     {searchQuery && (
-                      <p className="text-sm text-neutral-400 mt-1">Coba kata kunci lain</p>
+                      <p className="text-sm text-neutral-500 mt-1">Coba kata kunci lain</p>
                     )}
                   </div>
                 )}
@@ -353,14 +381,20 @@ export default function BuyNumber() {
         </div>
       )}
 
-      {/* Placeholder kalau belum pilih service */}
+      {/* Placeholder */}
       {!selectedService && !loadingServices && (
-        <div className="border-2 border-dashed border-neutral-300 rounded-xl p-12 text-center">
-          <div className="w-14 h-14 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <ShoppingCart size={24} className="text-neutral-400" />
+        <div 
+          className="border-4 border-dashed border-black p-12 text-center animate-slide-up"
+          style={{ animationDelay: '0.2s' }}
+        >
+          <div 
+            className="w-16 h-16 bg-neutral-100 flex items-center justify-center mx-auto mb-4 border-4 border-black"
+            style={{ boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)' }}
+          >
+            <ShoppingCart size={28} className="text-neutral-400" />
           </div>
-          <p className="text-neutral-900 font-semibold mb-1">Pilih Aplikasi Dulu</p>
-          <p className="text-sm text-neutral-500">Klik salah satu aplikasi di atas untuk melihat daftar negara</p>
+          <p className="font-black text-xl mb-1">PILIH APLIKASI DULU</p>
+          <p className="text-sm text-neutral-600 font-medium">Klik salah satu aplikasi di atas untuk melihat daftar negara</p>
         </div>
       )}
     </div>

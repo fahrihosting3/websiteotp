@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { getCurrentUser, logoutUser } from "@/lib/auth";
 import {
   LayoutDashboard,
@@ -10,8 +10,6 @@ import {
   Wallet,
   History,
   LogOut,
-  ChevronLeft,
-  ChevronRight,
   User,
   Menu,
   X,
@@ -33,11 +31,28 @@ const navItems: NavItem[] = [
   { label: "Riwayat", href: "/history", icon: History },
 ];
 
+// Floating shapes component for animated background
+function FloatingShapes() {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      {/* Grid pattern */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-50" />
+      
+      {/* Floating shapes */}
+      <div className="absolute top-20 left-10 w-16 h-16 border-4 border-black/10 animate-float" />
+      <div className="absolute top-40 right-20 w-12 h-12 border-4 border-black/10 rounded-full animate-float-reverse" />
+      <div className="absolute bottom-32 left-1/4 w-20 h-20 border-4 border-black/5 rotate-45 animate-float" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-1/3 right-1/3 w-8 h-8 border-4 border-black/10 rounded-full animate-bounce-neo" style={{ animationDelay: '0.5s' }} />
+      <div className="absolute bottom-20 right-10 w-14 h-14 border-4 border-black/5 animate-float-reverse" style={{ animationDelay: '2s' }} />
+      <div className="absolute top-1/2 left-20 w-10 h-10 border-4 border-black/10 rounded-full animate-float" style={{ animationDelay: '1.5s' }} />
+    </div>
+  );
+}
+
 export default function UserSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
-  const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [balanceData, setBalanceData] = useState<any>(null);
   const [loadingBalance, setLoadingBalance] = useState(false);
@@ -86,92 +101,180 @@ export default function UserSidebar({ children }: { children: React.ReactNode })
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-950">
-        <RefreshCw className="w-6 h-6 animate-spin text-neutral-400" />
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="neo-card p-8">
+          <RefreshCw className="w-8 h-8 animate-spin text-black" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100 flex">
+    <div className="min-h-screen bg-white relative">
+      {/* Animated Background */}
+      <FloatingShapes />
+      
       {/* Mobile Overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Top Navbar */}
+      <header className="sticky top-0 z-50 bg-white border-b-4 border-black">
+        <div className="flex items-center justify-between h-16 px-4 lg:px-6">
+          {/* Left: Logo & Menu */}
+          <div className="flex items-center gap-4">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="lg:hidden p-2 border-4 border-black bg-white hover:bg-black hover:text-white transition-colors"
+              style={{ boxShadow: '3px 3px 0px 0px rgba(0,0,0,1)' }}
+            >
+              <Menu size={20} />
+            </button>
+
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 bg-black flex items-center justify-center border-4 border-black"
+                style={{ boxShadow: '3px 3px 0px 0px rgba(0,0,0,0.3)' }}
+              >
+                <span className="text-white font-black text-sm">RO</span>
+              </div>
+              <span className="font-black text-xl tracking-tight hidden sm:block">RUMA OTP</span>
+            </Link>
+          </div>
+
+          {/* Center: Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-2">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              const Icon = item.icon;
+              
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`
+                    flex items-center gap-2 px-4 py-2 font-bold text-sm uppercase tracking-wider
+                    border-4 border-black transition-all
+                    ${isActive 
+                      ? "bg-black text-white" 
+                      : "bg-white text-black hover:bg-black hover:text-white"
+                    }
+                  `}
+                  style={{ 
+                    boxShadow: isActive ? '0px 0px 0px 0px rgba(0,0,0,1)' : '3px 3px 0px 0px rgba(0,0,0,1)',
+                    transform: isActive ? 'translate(3px, 3px)' : 'translate(0, 0)'
+                  }}
+                >
+                  <Icon size={16} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Right: User & Balance */}
+          <div className="flex items-center gap-3">
+            {/* Balance */}
+            <div 
+              className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white border-4 border-black"
+              style={{ boxShadow: '3px 3px 0px 0px rgba(0,0,0,1)' }}
+            >
+              <Wallet size={16} />
+              <span className="font-bold text-sm">
+                {loadingBalance ? "..." : balanceData?.success ? balanceData.data.formated : "Rp 0"}
+              </span>
+              <button 
+                onClick={fetchBalance} 
+                disabled={loadingBalance}
+                className="p-1 hover:bg-black hover:text-white transition-colors"
+              >
+                <RefreshCw size={14} className={loadingBalance ? "animate-spin" : ""} />
+              </button>
+            </div>
+
+            {/* User Menu */}
+            <div 
+              className="flex items-center gap-2 px-3 py-2 bg-black text-white border-4 border-black"
+              style={{ boxShadow: '3px 3px 0px 0px rgba(0,0,0,0.3)' }}
+            >
+              <div className="w-7 h-7 bg-white text-black flex items-center justify-center font-black text-xs">
+                {getInitials(user.name)}
+              </div>
+              <span className="font-bold text-sm hidden md:block">{user.name?.split(' ')[0]}</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Sidebar */}
       <aside
         className={`
-          fixed lg:sticky top-0 left-0 z-50 h-screen
-          bg-neutral-950 text-white
+          fixed top-0 left-0 z-50 h-full w-72
+          bg-white border-r-4 border-black
           flex flex-col
-          transition-all duration-300 ease-in-out
-          ${collapsed ? "lg:w-20" : "lg:w-64"}
-          ${mobileOpen ? "translate-x-0 w-72" : "-translate-x-full lg:translate-x-0"}
+          transition-transform duration-300 ease-in-out
+          lg:hidden
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        {/* Logo Section */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-neutral-800">
+        {/* Sidebar Header */}
+        <div className="h-16 flex items-center justify-between px-4 border-b-4 border-black">
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-neutral-950 font-black text-sm">RO</span>
+            <div className="w-10 h-10 bg-black flex items-center justify-center">
+              <span className="text-white font-black text-sm">RO</span>
             </div>
-            {!collapsed && (
-              <span className="font-semibold text-base tracking-tight whitespace-nowrap">
-                RUMA OTP
-              </span>
-            )}
+            <span className="font-black text-lg">RUMA OTP</span>
           </Link>
-          
-          {/* Mobile Close Button */}
           <button
             onClick={() => setMobileOpen(false)}
-            className="lg:hidden p-2 hover:bg-neutral-800 rounded-lg transition-colors"
+            className="p-2 border-4 border-black hover:bg-black hover:text-white transition-colors"
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* User Profile Section */}
-        <div className={`p-4 border-b border-neutral-800 ${collapsed ? "px-2" : ""}`}>
-          <div className={`flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}>
-            <div className="w-10 h-10 bg-neutral-700 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0">
+        {/* User Info */}
+        <div className="p-4 border-b-4 border-black">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 bg-black text-white flex items-center justify-center font-black text-lg">
               {getInitials(user.name)}
             </div>
-            {!collapsed && (
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium truncate">{user.name}</p>
-                <p className="text-xs text-neutral-400 truncate">{user.email}</p>
-              </div>
-            )}
+            <div className="min-w-0 flex-1">
+              <p className="font-bold truncate">{user.name}</p>
+              <p className="text-sm text-neutral-600 truncate">{user.email}</p>
+            </div>
           </div>
           
           {/* Balance */}
-          {!collapsed && (
-            <div className="mt-3 p-3 bg-neutral-900 rounded-lg">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-neutral-400">Saldo</span>
-                <button 
-                  onClick={fetchBalance} 
-                  disabled={loadingBalance}
-                  className="p-1 hover:bg-neutral-800 rounded transition-colors"
-                >
-                  <RefreshCw size={12} className={`text-neutral-400 ${loadingBalance ? "animate-spin" : ""}`} />
-                </button>
-              </div>
-              <p className="text-lg font-bold text-white mt-1">
-                {loadingBalance ? "..." : balanceData?.success ? balanceData.data.formated : "Rp 0"}
-              </p>
+          <div 
+            className="p-3 bg-white border-4 border-black"
+            style={{ boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)' }}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">Saldo</span>
+              <button 
+                onClick={fetchBalance} 
+                disabled={loadingBalance}
+                className="p-1 hover:bg-black hover:text-white transition-colors"
+              >
+                <RefreshCw size={12} className={loadingBalance ? "animate-spin" : ""} />
+              </button>
             </div>
-          )}
+            <p className="text-xl font-black mt-1">
+              {loadingBalance ? "..." : balanceData?.success ? balanceData.data.formated : "Rp 0"}
+            </p>
+          </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+          {navItems.map((item, index) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
             
@@ -181,92 +284,52 @@ export default function UserSidebar({ children }: { children: React.ReactNode })
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
                 className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  transition-all duration-200
-                  ${collapsed ? "justify-center" : ""}
+                  flex items-center gap-3 px-4 py-3 font-bold uppercase tracking-wider
+                  border-4 border-black transition-all animate-slide-in-left
                   ${isActive 
-                    ? "bg-white text-neutral-950 font-semibold" 
-                    : "text-neutral-300 hover:bg-neutral-800 hover:text-white"
+                    ? "bg-black text-white" 
+                    : "bg-white text-black hover:bg-black hover:text-white"
                   }
                 `}
-                title={collapsed ? item.label : undefined}
+                style={{ 
+                  boxShadow: isActive ? '0px 0px 0px 0px rgba(0,0,0,1)' : '4px 4px 0px 0px rgba(0,0,0,1)',
+                  transform: isActive ? 'translate(4px, 4px)' : 'translate(0, 0)',
+                  animationDelay: `${index * 0.1}s`
+                }}
               >
-                <Icon size={20} className="flex-shrink-0" />
-                {!collapsed && <span className="text-sm">{item.label}</span>}
+                <Icon size={20} />
+                <span>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* Bottom Section */}
-        <div className="p-3 border-t border-neutral-800 space-y-1">
-          {/* Back to Home */}
+        {/* Bottom */}
+        <div className="p-4 border-t-4 border-black space-y-2">
           <Link
             href="/"
-            className={`
-              flex items-center gap-3 px-3 py-2.5 rounded-lg
-              text-neutral-400 hover:bg-neutral-800 hover:text-white
-              transition-all duration-200
-              ${collapsed ? "justify-center" : ""}
-            `}
-            title={collapsed ? "Beranda" : undefined}
+            className="flex items-center gap-3 px-4 py-3 font-bold uppercase tracking-wider border-4 border-black bg-white hover:bg-black hover:text-white transition-all"
+            style={{ boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)' }}
           >
-            <Home size={20} className="flex-shrink-0" />
-            {!collapsed && <span className="text-sm">Beranda</span>}
+            <Home size={20} />
+            <span>Beranda</span>
           </Link>
 
-          {/* Logout */}
           <button
             onClick={handleLogout}
-            className={`
-              w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
-              text-red-400 hover:bg-red-950/50 hover:text-red-300
-              transition-all duration-200
-              ${collapsed ? "justify-center" : ""}
-            `}
-            title={collapsed ? "Keluar" : undefined}
+            className="w-full flex items-center gap-3 px-4 py-3 font-bold uppercase tracking-wider border-4 border-black bg-white text-black hover:bg-black hover:text-white transition-all"
+            style={{ boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)' }}
           >
-            <LogOut size={20} className="flex-shrink-0" />
-            {!collapsed && <span className="text-sm">Keluar</span>}
-          </button>
-
-          {/* Collapse Toggle - Desktop Only */}
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="hidden lg:flex w-full items-center justify-center gap-2 px-3 py-2 mt-2 rounded-lg text-neutral-500 hover:bg-neutral-800 hover:text-neutral-300 transition-all duration-200"
-          >
-            {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-            {!collapsed && <span className="text-xs">Collapse</span>}
+            <LogOut size={20} />
+            <span>Keluar</span>
           </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-screen">
-        {/* Top Bar - Mobile */}
-        <header className="lg:hidden sticky top-0 z-30 h-14 bg-white border-b border-neutral-200 flex items-center justify-between px-4">
-          <button
-            onClick={() => setMobileOpen(true)}
-            className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
-          >
-            <Menu size={22} className="text-neutral-700" />
-          </button>
-          
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-neutral-950 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xs">RO</span>
-            </div>
-            <span className="font-semibold text-neutral-900">RUMA OTP</span>
-          </Link>
-
-          <div className="w-10" /> {/* Spacer */}
-        </header>
-
-        {/* Page Content */}
-        <main className="flex-1">
-          {children}
-        </main>
-      </div>
+      {/* Main Content */}
+      <main className="relative z-10">
+        {children}
+      </main>
     </div>
   );
 }

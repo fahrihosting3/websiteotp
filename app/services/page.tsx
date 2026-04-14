@@ -25,7 +25,7 @@ export default function ServicesPage() {
 
   return (
     <UserSidebar>
-      <div className="min-h-full bg-neutral-100">
+      <div className="min-h-full">
         <BuyNumber />
       </div>
     </UserSidebar>
