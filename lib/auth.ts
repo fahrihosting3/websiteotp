@@ -1,91 +1,127 @@
 // lib/auth.ts
+import { registerUserAPI, loginUserAPI, getUserByEmail, updateUserBalance as updateBalanceAPI, type UserData } from "./externalDB";
+
 export type User = {
   id: string;
   username: string;
   email: string;
   name: string;
+  role: "user" | "admin";
   balance: number;
   createdAt: string;
 };
-export async function registerUser(email: string, password: string, name: string) {
-  const res = await fetch("/api/users/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, password }),
-  });
 
-  // Handle empty response
-  const text = await res.text();
-  if (!text) {
-    throw new Error("Server tidak merespons. Pastikan environment variables sudah diset dengan benar.");
+export async function registerUser(email: string, password: string, name: string, role: "user" | "admin" = "user"): Promise<User> {
+  const result = await registerUserAPI(name, email, password, role);
+  
+  if (!result.success) {
+    throw new Error(result.message || "Registrasi gagal");
   }
 
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new Error("Response dari server tidak valid: " + text.substring(0, 100));
-  }
+  const user: User = {
+    id: result.user?.email || email,
+    username: name,
+    email: email,
+    name: name,
+    role: role,
+    balance: 0,
+    createdAt: new Date().toISOString(),
+  };
 
-  if (!res.ok) throw new Error(data.error || "Registrasi gagal");
-  return data;
+  // Store in localStorage for session
+  localStorage.setItem("currentUser", JSON.stringify(user));
+  
+  return user;
 }
 
-export const loginUser = (email: string, password: string): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
-      const user = users.find(u => u.email === email);
+export async function loginUser(email: string, password: string): Promise<User> {
+  const result = await loginUserAPI(email, password);
+  
+  if (!result.success) {
+    throw new Error(result.message || "Login gagal");
+  }
 
-      if (!user) {
-        reject(new Error("Email atau password salah"));
-        return;
-      }
+  const userData = result.user;
+  
+  const user: User = {
+    id: userData?.email || email,
+    username: userData?.username || email.split("@")[0],
+    email: userData?.email || email,
+    name: userData?.username || email.split("@")[0],
+    role: (userData?.role as "user" | "admin") || "user",
+    balance: userData?.balance || 0,
+    createdAt: userData?.createdAt || new Date().toISOString(),
+  };
 
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      resolve(user);
-    }, 700);
-  });
-};
+  // Store in localStorage for session
+  localStorage.setItem("currentUser", JSON.stringify(user));
+  
+  return user;
+}
 
 export const logoutUser = () => {
   localStorage.removeItem("currentUser");
+  localStorage.removeItem("pendingDeposit");
 };
 
 export const getCurrentUser = (): User | null => {
+  if (typeof window === "undefined") return null;
   const user = localStorage.getItem("currentUser");
   return user ? JSON.parse(user) : null;
 };
 
-export const updateUserBalance = (amount: number): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-      reject(new Error("User tidak ditemukan"));
-      return;
-    }
+export const isAdmin = (): boolean => {
+  const user = getCurrentUser();
+  return user?.role === "admin";
+};
 
-    const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
-    const userIndex = users.findIndex(u => u.id === currentUser.id);
+export const updateUserBalance = async (amount: number): Promise<User> => {
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    throw new Error("User tidak ditemukan");
+  }
 
-    if (userIndex === -1) {
-      reject(new Error("User tidak ditemukan di database"));
-      return;
-    }
+  // Update balance via API
+  const result = await updateBalanceAPI(currentUser.email, amount);
+  
+  if (!result.success) {
+    throw new Error(result.message || "Gagal update saldo");
+  }
 
-    // Update balance
-    const currentBalance = users[userIndex].balance || 0;
-    users[userIndex].balance = currentBalance + amount;
-
-    // Save to localStorage
-    localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("currentUser", JSON.stringify(users[userIndex]));
-
-    resolve(users[userIndex]);
-  });
+  // Update local storage
+  const updatedUser: User = {
+    ...currentUser,
+    balance: (currentUser.balance || 0) + amount,
+  };
+  
+  localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+  
+  return updatedUser;
 };
 
 export const getUserBalance = (): number => {
   const user = getCurrentUser();
   return user?.balance || 0;
+};
+
+export const refreshUserData = async (): Promise<User | null> => {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return null;
+
+  try {
+    const result = await getUserByEmail(currentUser.email);
+    if (result.success && result.data) {
+      const updatedUser: User = {
+        ...currentUser,
+        balance: result.data.balance || currentUser.balance,
+        role: result.data.role || currentUser.role,
+      };
+      localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+      return updatedUser;
+    }
+  } catch (error) {
+    console.error("Failed to refresh user data:", error);
+  }
+  
+  return currentUser;
 };
