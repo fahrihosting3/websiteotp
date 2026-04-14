@@ -2,22 +2,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCurrentUser, logoutUser, refreshUserData } from "@/lib/auth";
+import { getCurrentUser, refreshUserData } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
+import UserSidebar from "@/components/UserSidebar";
 import Link from "next/link";
 import {
   User,
-  LogOut,
   Wallet,
-  Terminal,
   RefreshCw,
   ShoppingCart,
   ArrowRight,
   CreditCard,
-  Receipt,
-  Shield,
   History,
+  Shield,
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -55,7 +52,6 @@ export default function Dashboard() {
       const data = await res.json();
       if (data.success) setBalance(data.data);
       
-      // Also refresh user data from external DB
       await refreshUserData();
     } catch (err) {
       console.error("Gagal ambil saldo", err);
@@ -65,201 +61,132 @@ export default function Dashboard() {
     }
   };
 
-  const handleLogout = () => {
-    logoutUser();
-    router.push("/");
-  };
+  if (!user) return null;
 
   return (
-    <>
-      <Navbar />
-      <div className="min-h-[calc(100vh-80px)] relative overflow-hidden bg-gray-50">
-        {/* Retro Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{ 
-            backgroundImage: `radial-gradient(circle at 2px 2px, #000 1px, transparent 1px)`,
-            backgroundSize: '32px 32px'
-          }}></div>
-        </div>
-        <div className="absolute inset-0 bg-[linear-gradient(0deg,_#d1d5db_1px,_transparent_1px),linear-gradient(90deg,_#d1d5db_1px,_transparent_1px)] bg-[length:40px_40px] opacity-10"></div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
+    <UserSidebar>
+      <div className="min-h-full bg-neutral-100">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Terminal size={14} className="text-gray-400" />
-                <span className="text-[10px] font-mono text-gray-400 tracking-wider">DASHBOARD</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-1 h-6 bg-gray-800 rounded-full"></div>
-                <h1 className="text-3xl sm:text-4xl font-light text-gray-900 tracking-tight">
-                  Dashboard
-                </h1>
-              </div>
-              <p className="text-gray-500 text-sm ml-3">
-                Selamat datang kembali, <span className="font-semibold text-gray-700">{user?.name}</span>
-              </p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <div>
+              <p className="text-sm text-neutral-500 mb-1">Selamat datang kembali,</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900">
+                {user?.name}
+              </h1>
             </div>
 
-            <div className="flex items-center gap-3">
-              {user?.role === "admin" && (
-                <Link
-                  href="/admin"
-                  className="flex items-center gap-2 px-4 py-2 text-white bg-rose-500 border border-rose-600 rounded-lg hover:bg-rose-600 transition-all duration-300 text-sm font-medium"
-                >
-                  <Shield size={14} />
-                  Admin Panel
-                </Link>
-              )}
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-300 text-sm"
+            {user?.role === "admin" && (
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors text-sm font-medium"
               >
-                <LogOut size={14} />
-                Keluar
-              </button>
-            </div>
+                <Shield size={16} />
+                Admin Panel
+              </Link>
+            )}
           </div>
 
-          {/* Stats Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             {/* Saldo Card */}
-            <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+            <div className="bg-white rounded-xl border border-neutral-200 p-5 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <Wallet size={18} className="text-gray-600" />
+                  <div className="w-11 h-11 bg-neutral-900 rounded-lg flex items-center justify-center">
+                    <Wallet size={20} className="text-white" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-mono text-gray-400">SALDO</p>
-                    <p className="text-2xl font-semibold text-gray-900">
-                      {loadingBalance ? "..." : balance?.formated || "Rp0"}
+                    <p className="text-xs text-neutral-500 font-medium">SALDO ANDA</p>
+                    <p className="text-2xl font-bold text-neutral-900">
+                      {loadingBalance ? "..." : balance?.formated || "Rp 0"}
                     </p>
                   </div>
                 </div>
-                <button onClick={fetchBalance} disabled={refreshing} className="p-1 text-gray-400 hover:text-gray-600">
-                  <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+                <button 
+                  onClick={fetchBalance} 
+                  disabled={refreshing} 
+                  className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                >
+                  <RefreshCw size={16} className={`text-neutral-400 ${refreshing ? "animate-spin" : ""}`} />
                 </button>
               </div>
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-[9px] font-mono text-gray-400">API_USERNAME</p>
-                <p className="font-mono text-xs text-gray-700">{balance?.username || "-"}</p>
+              <div className="bg-neutral-50 rounded-lg p-3">
+                <p className="text-[10px] text-neutral-400 font-medium mb-1">API USERNAME</p>
+                <p className="font-mono text-sm text-neutral-700">{balance?.username || "-"}</p>
               </div>
             </div>
 
             {/* User Card */}
-            <div className="lg:col-span-2 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <User size={18} className="text-gray-600" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-mono text-gray-400">AKUN</p>
-                    <p className="text-base font-semibold text-gray-800">{user?.name}</p>
-                    <p className="text-xs text-gray-500">{user?.email}</p>
-                  </div>
+            <div className="bg-white rounded-xl border border-neutral-200 p-5 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 bg-neutral-100 rounded-lg flex items-center justify-center">
+                  <User size={20} className="text-neutral-600" />
                 </div>
-                <div className="text-right">
-                  <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
-                    user?.role === "admin" 
-                      ? "bg-rose-100 text-rose-700" 
-                      : "bg-sky-100 text-sky-700"
-                  }`}>
-                    {user?.role === "admin" ? <Shield size={12} /> : <User size={12} />}
-                    {user?.role?.toUpperCase() || "USER"}
-                  </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-neutral-500 font-medium">AKUN ANDA</p>
+                  <p className="text-base font-semibold text-neutral-900 truncate">{user?.name}</p>
+                  <p className="text-sm text-neutral-500 truncate">{user?.email}</p>
                 </div>
+                <span className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${
+                  user?.role === "admin" 
+                    ? "bg-red-100 text-red-700" 
+                    : "bg-neutral-100 text-neutral-700"
+                }`}>
+                  {user?.role === "admin" ? <Shield size={12} /> : <User size={12} />}
+                  {user?.role?.toUpperCase() || "USER"}
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Action Buttons Grid - 2x2 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Pilih Layanan Button */}
-            <Link href="/services" className="block">
-              <div 
-                className="border-4 border-gray-900 bg-amber-400 p-6 shadow-[6px_6px_0px_#0A0A0A] hover:shadow-[8px_8px_0px_#0A0A0A] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-150 cursor-pointer h-full"
-                style={{ fontFamily: "'Space Mono', 'Courier New', monospace" }}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-gray-900 flex items-center justify-center">
-                      <ShoppingCart size={24} className="text-amber-400" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Terminal size={10} className="text-gray-900" />
-                        <span className="text-[10px] font-bold tracking-[3px] text-gray-900">RUMAHOTP.IO</span>
-                      </div>
-                      <h3 className="text-xl font-black tracking-tight text-gray-900">PILIH LAYANAN</h3>
-                      <p className="text-xs text-gray-700 tracking-wide mt-1">Beli nomor virtual untuk verifikasi OTP</p>
-                    </div>
+          {/* Quick Actions */}
+          <h2 className="text-sm font-semibold text-neutral-500 mb-4 uppercase tracking-wide">Menu Cepat</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Pilih Layanan */}
+            <Link href="/services" className="group">
+              <div className="bg-white rounded-xl border border-neutral-200 p-5 shadow-sm hover:shadow-md hover:border-neutral-300 transition-all h-full">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <ShoppingCart size={22} className="text-amber-600" />
                   </div>
-                  <div className="w-12 h-12 bg-gray-900 flex items-center justify-center">
-                    <ArrowRight size={20} className="text-amber-400" />
-                  </div>
+                  <ArrowRight size={18} className="text-neutral-300 group-hover:text-neutral-500 group-hover:translate-x-1 transition-all" />
                 </div>
+                <h3 className="text-base font-semibold text-neutral-900 mb-1">Pilih Layanan</h3>
+                <p className="text-sm text-neutral-500">Beli nomor virtual untuk verifikasi OTP</p>
               </div>
             </Link>
 
-            {/* Deposit Button */}
-            <Link href="/deposit" className="block">
-              <div 
-                className="border-4 border-gray-900 bg-emerald-400 p-6 shadow-[6px_6px_0px_#0A0A0A] hover:shadow-[8px_8px_0px_#0A0A0A] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-150 cursor-pointer h-full"
-                style={{ fontFamily: "'Space Mono', 'Courier New', monospace" }}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-gray-900 flex items-center justify-center">
-                      <CreditCard size={24} className="text-emerald-400" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Terminal size={10} className="text-gray-900" />
-                        <span className="text-[10px] font-bold tracking-[3px] text-gray-900">TOP UP</span>
-                      </div>
-                      <h3 className="text-xl font-black tracking-tight text-gray-900">DEPOSIT SALDO</h3>
-                      <p className="text-xs text-gray-700 tracking-wide mt-1">Isi saldo untuk membeli nomor OTP</p>
-                    </div>
+            {/* Deposit */}
+            <Link href="/deposit" className="group">
+              <div className="bg-white rounded-xl border border-neutral-200 p-5 shadow-sm hover:shadow-md hover:border-neutral-300 transition-all h-full">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <CreditCard size={22} className="text-emerald-600" />
                   </div>
-                  <div className="w-12 h-12 bg-gray-900 flex items-center justify-center">
-                    <ArrowRight size={20} className="text-emerald-400" />
-                  </div>
+                  <ArrowRight size={18} className="text-neutral-300 group-hover:text-neutral-500 group-hover:translate-x-1 transition-all" />
                 </div>
+                <h3 className="text-base font-semibold text-neutral-900 mb-1">Deposit Saldo</h3>
+                <p className="text-sm text-neutral-500">Isi saldo untuk membeli nomor OTP</p>
               </div>
             </Link>
 
-            {/* History Button */}
-            <Link href="/history" className="block md:col-span-2">
-              <div 
-                className="border-4 border-gray-900 bg-sky-400 p-6 shadow-[6px_6px_0px_#0A0A0A] hover:shadow-[8px_8px_0px_#0A0A0A] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-150 cursor-pointer"
-                style={{ fontFamily: "'Space Mono', 'Courier New', monospace" }}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-gray-900 flex items-center justify-center">
-                      <History size={24} className="text-sky-400" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Receipt size={10} className="text-gray-900" />
-                        <span className="text-[10px] font-bold tracking-[3px] text-gray-900">TRANSAKSI</span>
-                      </div>
-                      <h3 className="text-xl font-black tracking-tight text-gray-900">RIWAYAT TRANSAKSI</h3>
-                      <p className="text-xs text-gray-700 tracking-wide mt-1">Lihat semua riwayat deposit dan pembelian</p>
-                    </div>
+            {/* Riwayat */}
+            <Link href="/history" className="group sm:col-span-2 lg:col-span-1">
+              <div className="bg-white rounded-xl border border-neutral-200 p-5 shadow-sm hover:shadow-md hover:border-neutral-300 transition-all h-full">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <History size={22} className="text-sky-600" />
                   </div>
-                  <div className="w-12 h-12 bg-gray-900 flex items-center justify-center">
-                    <ArrowRight size={20} className="text-sky-400" />
-                  </div>
+                  <ArrowRight size={18} className="text-neutral-300 group-hover:text-neutral-500 group-hover:translate-x-1 transition-all" />
                 </div>
+                <h3 className="text-base font-semibold text-neutral-900 mb-1">Riwayat Transaksi</h3>
+                <p className="text-sm text-neutral-500">Lihat semua riwayat deposit dan pembelian</p>
               </div>
             </Link>
           </div>
         </div>
       </div>
-    </>
+    </UserSidebar>
   );
 }

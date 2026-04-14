@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getCurrentUser } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
+import UserSidebar from "@/components/UserSidebar";
 import BuyNumber from "@/components/BuyNumber";
 
 export default function ServicesPage() {
@@ -24,11 +24,10 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden" style={{ background: "#FFFEF0" }}>
-      <Navbar />
-      <div className="w-full">
+    <UserSidebar>
+      <div className="min-h-full bg-neutral-100">
         <BuyNumber />
       </div>
-    </div>
+    </UserSidebar>
   );
 }
