@@ -73,26 +73,26 @@ export default function AdminTransactionsPage() {
     switch (status) {
       case "success":
         return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 bg-white text-black text-xs font-black uppercase border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-white text-black text-xs font-black uppercase border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <CheckCircle2 size={12} /> OK
           </span>
         );
       case "pending":
         return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 bg-black text-white text-xs font-black uppercase border-2 border-white">
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-black text-white text-xs font-black uppercase border-4 border-white">
             <Clock size={12} /> WAIT
           </span>
         );
       case "cancel":
       case "expired":
         return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 bg-neutral-800 text-neutral-400 text-xs font-black uppercase border-2 border-neutral-600">
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-neutral-800 text-neutral-400 text-xs font-black uppercase border-4 border-neutral-600">
             <XCircle size={12} /> {status.toUpperCase()}
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 bg-neutral-800 text-white text-xs font-black uppercase border-2 border-neutral-600">
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-neutral-800 text-white text-xs font-black uppercase border-4 border-neutral-600">
             {status.toUpperCase()}
           </span>
         );
@@ -103,7 +103,7 @@ export default function AdminTransactionsPage() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 bg-white border-4 border-black flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div className="w-16 h-16 bg-white border-4 border-black flex items-center justify-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] animate-pulse-neo">
             <RefreshCw className="animate-spin text-black" size={24} />
           </div>
           <span className="text-white text-sm font-mono uppercase tracking-wider">Loading transactions...</span>
@@ -113,7 +113,7 @@ export default function AdminTransactionsPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 animate-slide-up">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
         <div>
@@ -127,7 +127,7 @@ export default function AdminTransactionsPage() {
         <button
           onClick={fetchData}
           disabled={refreshing}
-          className="flex items-center gap-2 px-6 py-3 bg-white text-black font-black uppercase text-sm border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-white text-black font-black uppercase text-sm border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all active:translate-x-0 active:translate-y-0 active:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
         >
           <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
           Refresh
@@ -152,7 +152,7 @@ export default function AdminTransactionsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="pl-12 pr-8 py-3 bg-white border-4 border-black text-black font-bold focus:outline-none appearance-none cursor-pointer text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            className="pl-12 pr-8 py-3 bg-white border-4 border-black text-black font-bold focus:outline-none appearance-none cursor-pointer text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all"
           >
             <option value="all">SEMUA</option>
             <option value="success">SUKSES</option>
@@ -167,7 +167,7 @@ export default function AdminTransactionsPage() {
       <div className="bg-black border-4 border-white shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] overflow-hidden">
         <div className="p-6 border-b-4 border-white">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white flex items-center justify-center border-2 border-black">
+            <div className="w-12 h-12 bg-white flex items-center justify-center border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
               <Receipt size={24} className="text-black" />
             </div>
             <div>
@@ -191,11 +191,11 @@ export default function AdminTransactionsPage() {
             </thead>
             <tbody>
               {filteredTrx.map((trx, idx) => (
-                <tr key={trx.id} className={`border-b-2 border-neutral-800 hover:bg-neutral-900 transition-colors ${idx % 2 === 0 ? 'bg-neutral-950' : 'bg-black'}`}>
+                <tr key={trx.id} className={`border-b-4 border-neutral-800 hover:bg-neutral-900 transition-colors ${idx % 2 === 0 ? 'bg-neutral-950' : 'bg-black'}`}>
                   <td className="px-6 py-5 font-mono text-xs text-neutral-500">{trx.depositId || trx.id}</td>
                   <td className="px-6 py-5 text-white text-sm font-bold">{trx.userEmail}</td>
                   <td className="px-6 py-5">
-                    <span className="px-3 py-1 bg-neutral-800 border-2 border-neutral-600 text-white text-xs font-black uppercase">
+                    <span className="px-3 py-1 bg-neutral-800 border-4 border-neutral-600 text-white text-xs font-black uppercase">
                       {trx.type?.toUpperCase() || "DEPOSIT"}
                     </span>
                   </td>
@@ -207,7 +207,7 @@ export default function AdminTransactionsPage() {
             </tbody>
           </table>
           {filteredTrx.length === 0 && (
-            <div className="text-center py-16 border-t-2 border-dashed border-neutral-700">
+            <div className="text-center py-16 border-t-4 border-dashed border-neutral-700">
               <AlertCircle size={40} className="mx-auto mb-4 text-neutral-600" />
               <p className="font-black text-white uppercase">Tidak ada transaksi</p>
               <p className="text-sm text-neutral-500 font-mono mt-1">Coba ubah filter atau kata kunci</p>

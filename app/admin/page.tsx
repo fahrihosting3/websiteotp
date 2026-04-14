@@ -94,19 +94,19 @@ export default function AdminOverview() {
     switch (status) {
       case "success":
         return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 bg-white text-black text-xs font-black uppercase border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-white text-black text-xs font-black uppercase border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <CheckCircle2 size={12} /> OK
           </span>
         );
       case "pending":
         return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 bg-black text-white text-xs font-black uppercase border-2 border-white">
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-black text-white text-xs font-black uppercase border-4 border-white">
             <Clock size={12} /> WAIT
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 bg-neutral-800 text-white text-xs font-black uppercase border-2 border-neutral-600">
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-neutral-800 text-white text-xs font-black uppercase border-4 border-neutral-600">
             <XCircle size={12} /> {status.toUpperCase()}
           </span>
         );
@@ -114,7 +114,7 @@ export default function AdminOverview() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 animate-slide-up">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
         <div>
@@ -128,7 +128,7 @@ export default function AdminOverview() {
         <button
           onClick={fetchData}
           disabled={refreshing}
-          className="flex items-center gap-2 px-6 py-3 bg-white text-black font-black uppercase text-sm border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-white text-black font-black uppercase text-sm border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all active:translate-x-0 active:translate-y-0 active:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
         >
           <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
           Refresh
@@ -137,59 +137,59 @@ export default function AdminOverview() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
-          <div className="w-12 h-12 bg-white flex items-center justify-center mb-4 border-2 border-black">
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
+          <div className="w-12 h-12 bg-white flex items-center justify-center mb-4 border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
             <Users size={24} className="text-black" />
           </div>
-          <p className="text-neutral-500 text-[10px] font-mono tracking-[0.15em] mb-1">TOTAL USER</p>
+          <p className="text-neutral-500 text-[10px] font-mono tracking-[0.15em] mb-1 uppercase">Total User</p>
           <p className="text-4xl font-black text-white">{stats.totalUsers}</p>
         </div>
 
-        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
-          <div className="w-12 h-12 bg-white flex items-center justify-center mb-4 border-2 border-black">
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
+          <div className="w-12 h-12 bg-white flex items-center justify-center mb-4 border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
             <Receipt size={24} className="text-black" />
           </div>
-          <p className="text-neutral-500 text-[10px] font-mono tracking-[0.15em] mb-1">TOTAL TRX</p>
+          <p className="text-neutral-500 text-[10px] font-mono tracking-[0.15em] mb-1 uppercase">Total Trx</p>
           <p className="text-4xl font-black text-white">{stats.totalTransactions}</p>
         </div>
 
-        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
-          <div className="w-12 h-12 bg-neutral-800 border-2 border-white flex items-center justify-center mb-4">
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
+          <div className="w-12 h-12 bg-neutral-800 border-4 border-white flex items-center justify-center mb-4">
             <Clock size={24} className="text-white" />
           </div>
-          <p className="text-neutral-500 text-[10px] font-mono tracking-[0.15em] mb-1">PENDING</p>
+          <p className="text-neutral-500 text-[10px] font-mono tracking-[0.15em] mb-1 uppercase">Pending</p>
           <p className="text-4xl font-black text-white">{stats.pendingTransactions}</p>
         </div>
 
-        <div className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-          <div className="w-12 h-12 bg-black flex items-center justify-center mb-4 border-2 border-white">
+        <div className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
+          <div className="w-12 h-12 bg-black flex items-center justify-center mb-4 border-4 border-white">
             <Wallet size={24} className="text-white" />
           </div>
-          <p className="text-neutral-600 text-[10px] font-mono tracking-[0.15em] mb-1">TOTAL DEPOSIT</p>
+          <p className="text-neutral-600 text-[10px] font-mono tracking-[0.15em] mb-1 uppercase">Total Deposit</p>
           <p className="text-2xl font-black text-black">{formatCurrency(stats.totalDeposit)}</p>
         </div>
       </div>
 
       {/* Success/Failed Stats */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+        <div className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-neutral-600 text-[10px] font-mono tracking-[0.15em] mb-1">TRX SUKSES</p>
+              <p className="text-neutral-600 text-[10px] font-mono tracking-[0.15em] mb-1 uppercase">Trx Sukses</p>
               <p className="text-4xl font-black text-black">{stats.successTransactions}</p>
             </div>
-            <div className="w-16 h-16 bg-black flex items-center justify-center border-2 border-black">
+            <div className="w-16 h-16 bg-black flex items-center justify-center border-4 border-black">
               <CheckCircle2 size={32} className="text-white" />
             </div>
           </div>
         </div>
-        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-neutral-500 text-[10px] font-mono tracking-[0.15em] mb-1">TRX GAGAL</p>
+              <p className="text-neutral-500 text-[10px] font-mono tracking-[0.15em] mb-1 uppercase">Trx Gagal</p>
               <p className="text-4xl font-black text-white">{stats.cancelledTransactions}</p>
             </div>
-            <div className="w-16 h-16 bg-neutral-800 flex items-center justify-center border-2 border-white">
+            <div className="w-16 h-16 bg-neutral-800 flex items-center justify-center border-4 border-white">
               <XCircle size={32} className="text-white" />
             </div>
           </div>
@@ -197,7 +197,7 @@ export default function AdminOverview() {
       </div>
 
       {/* Recent Data */}
-      <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+      <div className="bg-black border-4 border-white p-6 shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
         <div className="grid md:grid-cols-2 gap-8">
           {/* Recent Transactions */}
           <div>
@@ -209,7 +209,7 @@ export default function AdminOverview() {
               {transactions.slice(0, 5).map((trx) => (
                 <div 
                   key={trx.id} 
-                  className="flex items-center justify-between p-4 bg-neutral-900 border-2 border-white hover:bg-neutral-800 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
+                  className="flex items-center justify-between p-4 bg-neutral-900 border-4 border-white hover:bg-neutral-800 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
                 >
                   <div>
                     <p className="font-bold text-sm text-white">{trx.userEmail}</p>
@@ -222,7 +222,7 @@ export default function AdminOverview() {
                 </div>
               ))}
               {transactions.length === 0 && (
-                <div className="text-center py-12 border-2 border-dashed border-neutral-700">
+                <div className="text-center py-12 border-4 border-dashed border-neutral-700">
                   <AlertCircle size={32} className="mx-auto mb-3 text-neutral-600" />
                   <p className="text-sm text-neutral-500 font-mono">No transactions yet</p>
                 </div>
@@ -240,10 +240,10 @@ export default function AdminOverview() {
               {users.slice(0, 5).map((u) => (
                 <div 
                   key={u.email} 
-                  className="flex items-center justify-between p-4 bg-neutral-900 border-2 border-white hover:bg-neutral-800 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
+                  className="flex items-center justify-between p-4 bg-neutral-900 border-4 border-white hover:bg-neutral-800 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-white flex items-center justify-center text-black font-black text-sm border-2 border-black">
+                    <div className="w-10 h-10 bg-white flex items-center justify-center text-black font-black text-sm border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                       {u.username?.charAt(0).toUpperCase()}
                     </div>
                     <div>
@@ -253,15 +253,15 @@ export default function AdminOverview() {
                   </div>
                   <span className={`px-3 py-1 text-xs font-black uppercase ${
                     u.role === "admin" 
-                      ? "bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" 
-                      : "bg-neutral-800 text-white border-2 border-neutral-600"
+                      ? "bg-white text-black border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" 
+                      : "bg-neutral-800 text-white border-4 border-neutral-600"
                   }`}>
                     {u.role?.toUpperCase() || "USER"}
                   </span>
                 </div>
               ))}
               {users.length === 0 && (
-                <div className="text-center py-12 border-2 border-dashed border-neutral-700">
+                <div className="text-center py-12 border-4 border-dashed border-neutral-700">
                   <AlertCircle size={32} className="mx-auto mb-3 text-neutral-600" />
                   <p className="text-sm text-neutral-500 font-mono">No users yet</p>
                 </div>

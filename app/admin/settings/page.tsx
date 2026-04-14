@@ -91,7 +91,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-16 h-16 bg-white border-4 border-black flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        <div className="w-16 h-16 bg-white border-4 border-black flex items-center justify-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] animate-pulse-neo">
           <RefreshCw className="animate-spin text-black" size={24} />
         </div>
       </div>
@@ -99,7 +99,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 animate-slide-up">
       {/* Header */}
       <div className="mb-10">
         <p className="text-neutral-500 text-xs font-mono tracking-[0.2em] mb-2">// SETTINGS</p>
@@ -110,10 +110,10 @@ export default function SettingsPage() {
       {/* Settings Form */}
       <div className="space-y-6">
         {/* API Status Card */}
-        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-white flex items-center justify-center border-2 border-black">
+              <div className="w-14 h-14 bg-white flex items-center justify-center border-4 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
                 <Shield size={28} className="text-black" />
               </div>
               <div>
@@ -123,10 +123,10 @@ export default function SettingsPage() {
             </div>
             <div className={`flex items-center gap-2 px-4 py-2 text-xs font-black uppercase ${
               settings.isActive 
-                ? "bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" 
-                : "bg-neutral-800 text-white border-2 border-neutral-600"
+                ? "bg-white text-black border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" 
+                : "bg-neutral-800 text-white border-4 border-neutral-600"
             }`}>
-              <div className={`w-2 h-2 ${settings.isActive ? "bg-black" : "bg-neutral-500"}`}></div>
+              <div className={`w-2 h-2 ${settings.isActive ? "bg-black animate-pulse" : "bg-neutral-500"}`}></div>
               {settings.isActive ? "ACTIVE" : "INACTIVE"}
             </div>
           </div>
@@ -134,14 +134,14 @@ export default function SettingsPage() {
           <label className="flex items-center gap-4 cursor-pointer">
             <div 
               onClick={() => setSettings(prev => ({ ...prev, isActive: !prev.isActive }))}
-              className={`w-14 h-8 border-4 transition-all relative ${
+              className={`w-16 h-8 border-4 transition-all relative ${
                 settings.isActive 
                   ? "bg-white border-black" 
                   : "bg-neutral-800 border-neutral-600"
               }`}
             >
               <div className={`absolute top-0 w-6 h-6 transition-all ${
-                settings.isActive ? "left-6 bg-black" : "left-0 bg-white"
+                settings.isActive ? "left-8 bg-black" : "left-0 bg-white"
               }`}></div>
             </div>
             <span className="text-sm text-white font-bold uppercase">
@@ -151,9 +151,9 @@ export default function SettingsPage() {
         </div>
 
         {/* API Key */}
-        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
           <div className="flex items-center gap-4 mb-5">
-            <div className="w-12 h-12 bg-neutral-900 border-2 border-white flex items-center justify-center">
+            <div className="w-12 h-12 bg-neutral-900 border-4 border-white flex items-center justify-center">
               <Key size={20} className="text-white" />
             </div>
             <div>
@@ -184,9 +184,9 @@ export default function SettingsPage() {
         </div>
 
         {/* Base URL */}
-        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
           <div className="flex items-center gap-4 mb-5">
-            <div className="w-12 h-12 bg-neutral-900 border-2 border-white flex items-center justify-center">
+            <div className="w-12 h-12 bg-neutral-900 border-4 border-white flex items-center justify-center">
               <Server size={20} className="text-white" />
             </div>
             <div>
@@ -205,9 +205,9 @@ export default function SettingsPage() {
         </div>
 
         {/* Webhook URL */}
-        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
+        <div className="bg-black border-4 border-white p-6 shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
           <div className="flex items-center gap-4 mb-5">
-            <div className="w-12 h-12 bg-neutral-900 border-2 border-white flex items-center justify-center">
+            <div className="w-12 h-12 bg-neutral-900 border-4 border-white flex items-center justify-center">
               <Globe size={20} className="text-white" />
             </div>
             <div>
@@ -230,7 +230,7 @@ export default function SettingsPage() {
           <button
             onClick={testConnection}
             disabled={testingConnection || !settings.apiKey}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-black text-white font-black uppercase text-sm border-4 border-white hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-black text-white font-black uppercase text-sm border-4 border-white hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all active:translate-x-0 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {testingConnection ? (
               <RefreshCw size={18} className="animate-spin" />
@@ -247,7 +247,7 @@ export default function SettingsPage() {
           <button
             onClick={saveSettings}
             disabled={saving}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-white text-black font-black uppercase text-sm border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-white text-black font-black uppercase text-sm border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all active:translate-x-0 active:translate-y-0 active:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
           >
             {saving ? (
               <RefreshCw size={18} className="animate-spin" />
