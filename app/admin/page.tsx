@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getCurrentUser } from "@/lib/auth";
-import { getAllUsers, getAllTransactions, getPendingTransactions, type UserData, type TransactionData } from "@/lib/externalDB";
+import { getAllUsers, getAllTransactions, type UserData, type TransactionData } from "@/lib/externalDB";
 import {
   Users,
   Receipt,
@@ -13,6 +13,8 @@ import {
   Terminal,
   RefreshCw,
   AlertCircle,
+  TrendingUp,
+  ArrowUpRight,
 } from "lucide-react";
 
 export default function AdminOverview() {
@@ -93,19 +95,19 @@ export default function AdminOverview() {
     switch (status) {
       case "success":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 bg-teal-100 border-2 border-slate-800 text-xs font-bold text-slate-800">
+          <span className="inline-flex items-center gap-1 px-2 py-1 bg-[rgb(var(--success)/0.15)] border-2 border-[rgb(var(--success))] text-[rgb(var(--success))] text-xs font-bold rounded">
             <CheckCircle2 size={12} /> SUKSES
           </span>
         );
       case "pending":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 border-2 border-slate-800 text-xs font-bold text-slate-800">
+          <span className="inline-flex items-center gap-1 px-2 py-1 bg-[rgb(var(--warning)/0.15)] border-2 border-[rgb(var(--warning))] text-[rgb(var(--warning))] text-xs font-bold rounded">
             <Clock size={12} /> PENDING
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 bg-rose-100 border-2 border-slate-800 text-xs font-bold text-slate-800">
+          <span className="inline-flex items-center gap-1 px-2 py-1 bg-[rgb(var(--destructive)/0.15)] border-2 border-[rgb(var(--destructive))] text-[rgb(var(--destructive))] text-xs font-bold rounded">
             <XCircle size={12} /> {status.toUpperCase()}
           </span>
         );
@@ -115,119 +117,129 @@ export default function AdminOverview() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 animate-fade-in">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Terminal size={14} className="text-slate-400" />
-            <span className="text-[10px] font-mono text-slate-400 tracking-wider">ADMIN PANEL</span>
+            <Terminal size={14} className="text-[rgb(var(--muted-foreground))]" />
+            <span className="text-[10px] font-mono text-[rgb(var(--muted-foreground))] tracking-wider">ADMIN PANEL</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-1 h-6 bg-rose-500 rounded-full"></div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-8 bg-gradient-to-b from-[rgb(var(--primary))] to-[rgb(var(--secondary))] rounded-full"></div>
+            <h1 className="text-3xl sm:text-4xl font-black text-[rgb(var(--foreground))] tracking-tight">
               Overview
             </h1>
           </div>
-          <p className="text-slate-500 text-sm ml-3">
-            Selamat datang, <span className="font-semibold text-slate-700">{user?.name}</span>
+          <p className="text-[rgb(var(--muted-foreground))] text-sm ml-4">
+            Selamat datang, <span className="font-semibold text-[rgb(var(--foreground))]">{user?.name}</span>
           </p>
         </div>
 
         <button
           onClick={fetchData}
           disabled={refreshing}
-          className="flex items-center gap-2 px-4 py-2 text-slate-600 bg-white border-3 border-slate-800 shadow-[3px_3px_0px_#1e293b] hover:shadow-[4px_4px_0px_#1e293b] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all text-sm font-bold"
+          className="btn-neo flex items-center gap-2 px-4 py-2.5 text-[rgb(var(--foreground))] text-sm disabled:opacity-50"
         >
-          <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+          <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
           REFRESH
         </button>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white border-4 border-slate-800 p-5 shadow-[6px_6px_0px_#1e293b]">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 stagger-children">
+        <div className="card-neo p-5 group">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-sky-200 border-2 border-slate-800 flex items-center justify-center">
-              <Users size={18} className="text-slate-800" />
+            <div className="w-12 h-12 bg-[rgb(var(--info)/0.15)] border-2 border-[rgb(var(--info))] rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <Users size={20} className="text-[rgb(var(--info))]" />
             </div>
-            <p className="text-[10px] font-mono text-slate-500 tracking-wider">TOTAL USER</p>
           </div>
-          <p className="text-3xl font-black text-slate-800">{stats.totalUsers}</p>
+          <p className="text-[10px] font-mono text-[rgb(var(--muted-foreground))] tracking-wider mb-1">TOTAL USER</p>
+          <p className="text-3xl font-black text-[rgb(var(--foreground))]">{stats.totalUsers}</p>
         </div>
 
-        <div className="bg-white border-4 border-slate-800 p-5 shadow-[6px_6px_0px_#1e293b]">
+        <div className="card-neo p-5 group">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-teal-200 border-2 border-slate-800 flex items-center justify-center">
-              <Receipt size={18} className="text-slate-800" />
+            <div className="w-12 h-12 bg-[rgb(var(--secondary)/0.15)] border-2 border-[rgb(var(--secondary))] rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <Receipt size={20} className="text-[rgb(var(--secondary))]" />
             </div>
-            <p className="text-[10px] font-mono text-slate-500 tracking-wider">TOTAL TRX</p>
           </div>
-          <p className="text-3xl font-black text-slate-800">{stats.totalTransactions}</p>
+          <p className="text-[10px] font-mono text-[rgb(var(--muted-foreground))] tracking-wider mb-1">TOTAL TRX</p>
+          <p className="text-3xl font-black text-[rgb(var(--foreground))]">{stats.totalTransactions}</p>
         </div>
 
-        <div className="bg-white border-4 border-slate-800 p-5 shadow-[6px_6px_0px_#1e293b]">
+        <div className="card-neo p-5 group">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-amber-200 border-2 border-slate-800 flex items-center justify-center">
-              <Clock size={18} className="text-slate-800" />
+            <div className="w-12 h-12 bg-[rgb(var(--warning)/0.15)] border-2 border-[rgb(var(--warning))] rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <Clock size={20} className="text-[rgb(var(--warning))]" />
             </div>
-            <p className="text-[10px] font-mono text-slate-500 tracking-wider">PENDING</p>
           </div>
-          <p className="text-3xl font-black text-slate-800">{stats.pendingTransactions}</p>
+          <p className="text-[10px] font-mono text-[rgb(var(--muted-foreground))] tracking-wider mb-1">PENDING</p>
+          <p className="text-3xl font-black text-[rgb(var(--foreground))]">{stats.pendingTransactions}</p>
         </div>
 
-        <div className="bg-white border-4 border-slate-800 p-5 shadow-[6px_6px_0px_#1e293b]">
+        <div className="card-neo p-5 group">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-emerald-200 border-2 border-slate-800 flex items-center justify-center">
-              <Wallet size={18} className="text-slate-800" />
+            <div className="w-12 h-12 bg-[rgb(var(--success)/0.15)] border-2 border-[rgb(var(--success))] rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <Wallet size={20} className="text-[rgb(var(--success))]" />
             </div>
-            <p className="text-[10px] font-mono text-slate-500 tracking-wider">TOTAL DEPOSIT</p>
           </div>
-          <p className="text-xl font-black text-slate-800">{formatCurrency(stats.totalDeposit)}</p>
+          <p className="text-[10px] font-mono text-[rgb(var(--muted-foreground))] tracking-wider mb-1">TOTAL DEPOSIT</p>
+          <p className="text-xl font-black text-[rgb(var(--foreground))]">{formatCurrency(stats.totalDeposit)}</p>
         </div>
       </div>
 
       {/* Success/Failed Stats */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-teal-50 border-4 border-slate-800 p-5 shadow-[6px_6px_0px_#1e293b]">
+      <div className="grid grid-cols-2 gap-4 mb-8 stagger-children">
+        <div className="card-neo p-5 bg-[rgb(var(--success)/0.05)]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-mono text-slate-600 tracking-wider mb-1">TRX SUKSES</p>
-              <p className="text-2xl font-black text-slate-800">{stats.successTransactions}</p>
+              <p className="text-[10px] font-mono text-[rgb(var(--muted-foreground))] tracking-wider mb-1">TRX SUKSES</p>
+              <p className="text-3xl font-black text-[rgb(var(--foreground))]">{stats.successTransactions}</p>
             </div>
-            <CheckCircle2 size={32} className="text-teal-600" />
+            <div className="w-14 h-14 bg-[rgb(var(--success)/0.2)] rounded-full flex items-center justify-center">
+              <CheckCircle2 size={28} className="text-[rgb(var(--success))]" />
+            </div>
           </div>
         </div>
-        <div className="bg-rose-50 border-4 border-slate-800 p-5 shadow-[6px_6px_0px_#1e293b]">
+        <div className="card-neo p-5 bg-[rgb(var(--destructive)/0.05)]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-mono text-slate-600 tracking-wider mb-1">TRX GAGAL/EXPIRED</p>
-              <p className="text-2xl font-black text-slate-800">{stats.cancelledTransactions}</p>
+              <p className="text-[10px] font-mono text-[rgb(var(--muted-foreground))] tracking-wider mb-1">TRX GAGAL</p>
+              <p className="text-3xl font-black text-[rgb(var(--foreground))]">{stats.cancelledTransactions}</p>
             </div>
-            <XCircle size={32} className="text-rose-600" />
+            <div className="w-14 h-14 bg-[rgb(var(--destructive)/0.2)] rounded-full flex items-center justify-center">
+              <XCircle size={28} className="text-[rgb(var(--destructive))]" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Recent Data */}
-      <div className="bg-white border-4 border-slate-800 shadow-[8px_8px_0px_#1e293b] p-6">
+      <div className="card-neo p-6 animate-fade-in" style={{ animationDelay: "0.3s" }}>
         <div className="grid md:grid-cols-2 gap-6">
           {/* Recent Transactions */}
           <div>
-            <h3 className="text-sm font-bold text-slate-600 mb-3 tracking-wider">TRANSAKSI TERBARU</h3>
-            <div className="space-y-2">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-[rgb(var(--muted-foreground))] tracking-wider">TRANSAKSI TERBARU</h3>
+              <TrendingUp size={16} className="text-[rgb(var(--primary))]" />
+            </div>
+            <div className="space-y-3 stagger-children">
               {transactions.slice(0, 5).map((trx) => (
-                <div key={trx.id} className="flex items-center justify-between p-3 bg-slate-50 border-2 border-slate-800">
+                <div 
+                  key={trx.id} 
+                  className="flex items-center justify-between p-3 bg-[rgb(var(--muted)/0.5)] rounded-lg border border-[rgb(var(--border))] hover:bg-[rgb(var(--muted))] transition-all duration-200"
+                >
                   <div>
-                    <p className="font-bold text-sm text-slate-800">{trx.userEmail}</p>
-                    <p className="text-xs text-slate-500">{formatDate(trx.createdAt)}</p>
+                    <p className="font-bold text-sm text-[rgb(var(--foreground))]">{trx.userEmail}</p>
+                    <p className="text-xs text-[rgb(var(--muted-foreground))]">{formatDate(trx.createdAt)}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-sm text-slate-800">{formatCurrency(trx.amount)}</p>
+                    <p className="font-bold text-sm text-[rgb(var(--foreground))]">{formatCurrency(trx.amount)}</p>
                     {getStatusBadge(trx.status)}
                   </div>
                 </div>
               ))}
               {transactions.length === 0 && (
-                <div className="text-center py-8 text-slate-500">
+                <div className="text-center py-8 text-[rgb(var(--muted-foreground))]">
                   <AlertCircle size={32} className="mx-auto mb-2 opacity-50" />
                   <p>Belum ada transaksi</p>
                 </div>
@@ -237,25 +249,36 @@ export default function AdminOverview() {
 
           {/* Recent Users */}
           <div>
-            <h3 className="text-sm font-bold text-slate-600 mb-3 tracking-wider">USER TERBARU</h3>
-            <div className="space-y-2">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-[rgb(var(--muted-foreground))] tracking-wider">USER TERBARU</h3>
+              <ArrowUpRight size={16} className="text-[rgb(var(--secondary))]" />
+            </div>
+            <div className="space-y-3 stagger-children">
               {users.slice(0, 5).map((u) => (
-                <div key={u.email} className="flex items-center justify-between p-3 bg-slate-50 border-2 border-slate-800">
-                  <div>
-                    <p className="font-bold text-sm text-slate-800">{u.username}</p>
-                    <p className="text-xs text-slate-500">{u.email}</p>
+                <div 
+                  key={u.email} 
+                  className="flex items-center justify-between p-3 bg-[rgb(var(--muted)/0.5)] rounded-lg border border-[rgb(var(--border))] hover:bg-[rgb(var(--muted))] transition-all duration-200"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[rgb(var(--primary))] to-[rgb(var(--secondary))] flex items-center justify-center text-white font-bold text-sm">
+                      {u.username?.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-bold text-sm text-[rgb(var(--foreground))]">{u.username}</p>
+                      <p className="text-xs text-[rgb(var(--muted-foreground))]">{u.email}</p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className={`inline-flex items-center px-2 py-1 text-xs font-bold border-2 border-slate-800 ${
-                      u.role === "admin" ? "bg-rose-100" : "bg-sky-100"
-                    }`}>
-                      {u.role?.toUpperCase() || "USER"}
-                    </span>
-                  </div>
+                  <span className={`inline-flex items-center px-2 py-1 text-xs font-bold rounded border-2 ${
+                    u.role === "admin" 
+                      ? "bg-[rgb(var(--destructive)/0.15)] border-[rgb(var(--destructive))] text-[rgb(var(--destructive))]" 
+                      : "bg-[rgb(var(--info)/0.15)] border-[rgb(var(--info))] text-[rgb(var(--info))]"
+                  }`}>
+                    {u.role?.toUpperCase() || "USER"}
+                  </span>
                 </div>
               ))}
               {users.length === 0 && (
-                <div className="text-center py-8 text-slate-500">
+                <div className="text-center py-8 text-[rgb(var(--muted-foreground))]">
                   <AlertCircle size={32} className="mx-auto mb-2 opacity-50" />
                   <p>Belum ada user</p>
                 </div>
