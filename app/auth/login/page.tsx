@@ -1,9 +1,9 @@
 // app/auth/login/page.tsx
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { loginUser } from "@/lib/auth";
+import { loginUser, isAdmin } from "@/lib/auth";
 import Navbar from "@/components/Navbar";
 import { Lock, Mail, ArrowRight, Loader2, LogIn } from "lucide-react";
 
@@ -20,8 +20,13 @@ export default function LoginPage() {
     setError("");
 
     try {
-      await loginUser(email, password);
-      router.push("/dashboard");
+      const user = await loginUser(email, password);
+      // Redirect based on role
+      if (user.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err: any) {
       setError(err.message || "Login gagal. Periksa email dan password Anda.");
     } finally {
